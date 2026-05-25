@@ -55,11 +55,15 @@ NAT mode restricted the ability to observe live local network traffic properly. 
      ```bash
      sudo dpkg-reconfigure wireshark-common
      ```
-  6. Relaunched Wireshark using:
+  6. check if wireshark already installed using :
+     ```bash
+     wireshark --version
+     ```
+  6. Relaunch Wireshark using:
      ```bash
      wireshark &
      ```
-  7. Confirmed that the `eth0` interface appeared correctly and verified that live network traffic could be captured successfully.
+  7. Confirmed that the `eth0` interface appeared correctly and verified that live network traffic could       be captured successfully.
      
   8. Ran :
      ``` bash
