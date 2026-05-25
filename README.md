@@ -1,5 +1,4 @@
-# SOC-Home-Lab
-# Network Traffic Analysis & Packet Sniffing with Wireshark
+# SOC Home Lab - Network Traffic Analysis & Packet Sniffing with Wireshark
 
 ## 📌 1. Project Objective
 The objective of this lab was to learn fundamentals of network traffic analysis using Wireshark in Kali linux Virtual Machine environment
