@@ -31,8 +31,10 @@ The lab focused on:
 ## ⚠️ 3. Engineering Challenges & Troubleshooting
 
 ### Incident / Roadblock: 
-Wireshark traffic visibility limited while using NAT mode inside VirtualBox
+Ensuring DNS traffic visibility and identifying DNS query-response packets correctly inside Wireshark.
+
 * **The Problem:**
+During live packet capture, Wireshark displayed multiple network protocols simultaneously, making it difficult to isolate DNS-related traffic clearly. Additional filtering and packet inspection were required to identify DNS query and response communication generated from the `nslookup` requests and to verify successful domain name resolution.
 
 * **The Resolution Workflow:** 
   1. Open VirtualBox and Start Kali Linux.
@@ -65,6 +67,12 @@ Wireshark traffic visibility limited while using NAT mode inside VirtualBox
   7. Check on the query response of github.com and open it to check if request of nslookup successfully got response of query request by sent IP ADDRESS of github.com domain.
 
   <img src="images/dns-response-github.png" width="700">
+
+  8.Exported the packet capture file generated during DNS traffic analysis for future investigation and traffic-review practice
+
+  the packet capture file was saved as:
+  dns-analysis.pcapng
+  and store inside the `pcaps/` directory
   
 
 ---
@@ -76,36 +84,38 @@ Wireshark traffic visibility limited while using NAT mode inside VirtualBox
   - Installed and configured Wireshark permission for packet capturing
   - Captured live traffic network generated from :
   ``` bash
-  ping -c 5 google.com
+  nslookup github.com
   ```
-  - Applied `icmp` on display filter of Wireshark to isolate ICMP traffic.
+  and
+  ``` bash
+  nslookup google.com
+  ```
+  - Applied `dns` on display filter of Wireshark to isolate ICMP traffic.
 
 * **Key Observations:**
-  - Wireshark successfully captured DNS Echo Request and Echo Reply packets generated from the nslookup command.
-  - The packet capture confirmed successful communication between the Kali Linux virtual machine and external internet hosts.
-  - Bridged Adapter mode provided better visibility into live network traffic compared to NAT mode.
-  - The `icmp` filter helped simplify packet analysis by isolating only ICMP-related traffic.
-  - Packet timestamps and source/destination IP addresses became visible during live traffic analysis.
+  - Wireshark successfully captured DNS query and response packets generated from the nslookup command.
+  - The packet capture confirmed successful DNS communication between the Kali Linux virtual machine and external DNS servers.
+  - The `dns` filter helped simplify packet analysis by isolating only DNS-related traffic.
+  - Packet timestamps,queries domain, and resolved IP addresses became visible during live traffic analysis.
 ---
 
 ## 🚀 5. Key Takeaways & Career Alignment
 * **L1 SOC Skill Demonstrated:**
   - Basic packet capture and traffic analysis
-  - Understanding of ICMP protocol behavior
-  - Network interface troubleshooting
+  - Understanding of DNS protocol behavior
+  - Network interface toubleshooting
   - Virtual machine networking configuration
-  - Beginner-level Wireshark filtering and packet inspection
+  - Beginner-level wireshark filtering and packet inspection 
 * **Next Steps:**
-  - Analyze DNS traffic using the `dns` filter
   - Study TCP 3-way handshake behavior
   - Compare HTTP and HTTPS traffic visibility
-  - Export `.pcap` files for future log-analysis practice
   - Continue building beginner SOC and network-analysis projects
 ## 🛠 Skills Practiced
   - VirtualBox networking
   - Basic Networking Troubleshooting
   - Packet Capture
-  - ICMP Traffic Analysis
+  - DNS Traffic Analysis
   - Wireshark Filtering
+  - Export `.pcap` files for future log-analysis practice
   - Documentation and Technical Reporting
 
