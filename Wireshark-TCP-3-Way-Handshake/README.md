@@ -54,10 +54,10 @@ During live packet capture, Wireshark displayed multiple network protocols simul
       
   <img src="images/tcp-ip-addr-filter.png" width="700">
 
-  6. Check on the tcp syn request of github.com by client with port 58280 to server with port 443 successfully by check on sequence number(raw) = 1552639040
+  6. Checked the TCP SYN request of github.com by client with port 58280 to server with port 443 successfully by check on sequence number(raw) = 1552639040
   <img src="images/syn-packet.png" width="700">
 
-  7. Check on the response of github.com as server with port 443 to client with port 58280 successfully responsed by sending an acknowledgement and request synchronization to client by new sequence number = 4024869041 and acknowledgement number (raw) = 1552639041
+  7. Check on the response of github.com as server with port 443 to client with port 58280 successfully responded by sending an acknowledgement and requested synchronization with the client by new sequence number = 4024869041 and acknowledgement number (raw) = 1552639041
 
   <img src="images/syn-ack-packet.png" width="700">
 
@@ -76,7 +76,7 @@ During live packet capture, Wireshark displayed multiple network protocols simul
 ## 📊 4. Practical Execution & Findings
 
 * **Activity Executed:**
-  - Captured live traffic network generated from github.com
+  - captured live network traffic generated from github.com
   - use `nslookup` to find ip address of github.com 
   - Applied `tcp && ip.addr == 20.205.243.166` on display filter of Wireshark to isolate TCP 3 Way Handshake of github.com.
 
