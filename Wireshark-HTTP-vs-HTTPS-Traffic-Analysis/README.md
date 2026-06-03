@@ -1,13 +1,13 @@
-# TCP 3-Way Handshake Analysis with Wireshark
+# HTTP vs HTTPS Traffic Analysis with Wireshark
 
 ## 📌 1. Project Objective
-The objective of this lab was to learn TCP 3 Way Handshake practically using Wireshark in Kali linux Virtual Machine environment
+The objective of this lab was to learn the differences between HTTP and HTTPS network traffic practically using Wireshark inside a Kali linux Virtual Machine environment
 
 The lab focused on:
-- capturing live TCP 3-way handshake traffic
-- analyzing SYN, SYN-ACK, and ACK packets generated from github.com
-- documenting TCP 3-Way Handshake behavior using raw sequence numbers and acknowledgement numbers
-
+- capturing live network traffic of HTTP and HTTPS
+- analyzing the difference of HTTP and HTTPS packets generated from `github.com` and `neverssl.com` 
+- Obserrving and documenting behavior of HTTP through GET requests
+- Obserrving and documenting behavior of HTTPS through TLS Client Hello and Server Hello packets
 ---
 
 ## ⚙️ 2. Lab Specifications & Tools
@@ -31,43 +31,73 @@ The lab focused on:
 ## ⚠️ 3. Engineering Challenges & Troubleshooting
 
 ### Incident / Roadblock: 
-Ensuring TCP traffic visibility and identifying TCP SYN, SYN-ACK, and ACK packets correctly inside Wireshark.
+Ensuring proper visibility of both HTTP and HTTPS traffic and identifying the correct packets inside Wireshark.
 
 * **The Problem:**
-During live packet capture, Wireshark displayed multiple network protocols simultaneously, making it difficult to isolate TCP handshake-related traffic clearly. Additional filtering and packet inspection were required to identify TCP handshake communication generated from the `tcp && ip.addr==20.205.243.166` requests and to verify successful 3 way handshake of TCP.
+During the initial attempt to capture live HTTP and HTTPS traffic simultaneously, packet analysis became difficult because Wireshark displayed multiple protocols at the same time. This made it challenging to isolate and identify the required HTTP and HTTPS packets clearly.
+
+To resolve this issue, the websites were tested one at a time instead of simultaneously.
+
+Additional display filtering and packet inspection were required to:
+
+Identify HTTP communication using GET requests
+Verify successful HTTP traffic capture
+Identify HTTPS communication using TLS handshake packets
+Verify successful HTTPS communication through Client Hello and Server Hello messages
 
 * **The Resolution Workflow:** 
   1. Open VirtualBox and Start Kali Linux.
-  2. Relaunch Wireshark using:
-  ```bash
-  wireshark &
+  2. update and upgrade application on kali linux with  `sudo apt update` and       `sudo apt upgrade`
+     <img src="images/sudo-apt-update-and-upgrade.png" width="700">
+  3. Relaunch Wireshark using:
+    ```bash
+      wireshark &
      ```
-  3. Confirmed that the `eth0` interface appeared correctly and verified that live network traffic could be captured successfully.
+  4. Confirmed that the `eth0` interface appeared correctly and verified that live network traffic could be captured successfully.
 
-     <img src="images/eth0-interface-selected.png" width="700">
+     <img src="images/eth0-interface.png" width="700">
      
-  4. Opened github.com using Mozilla Firefox for TCP 3 way handshake
+  5. Opened `neverssl.com` using command  `firefox http://neverssl.com &`
+
+     <img src="images/http-website-open.png" width="700"> 
+       
+     to generate and capture live network traffic using Wireshark
+  
+  6. Applied the `http.request` display filter in Wireshark to verify that HTTP     packets were captured successfully .
+     
+    <img src="images/http-filter.png" width="700">
+       
+  7. Inspected the HTTP GET request packet:
+    GET / HTTP/1.1
+
+    <img src="images/http-get-request.png" width="700">
+
+    to verify readable unencrypted HTTP communication.
+  
+  8. Opened github.com using command  `firefox https://github.com &`
+
+    <img src="images/https-website-open.png" width="700">
        
      to generate and capture live network traffic using Wireshark
      
-  5. Applied the `tcp && ip.addr==20.205.243.166` display filter in Wireshark to verify that Wireshark successfully captured the TCP 3 way handshake traffic generated from TCP traffic associated with the github.com IP address.
+  9. Applied the `tls` display filter in Wireshark to isolate encrypted HTTPS traffic
       
-  <img src="images/tcp-ip-addr-filter.png" width="700">
+    <img src="images/tls-filter.png" width="700">
 
-  6. Checked the TCP SYN request of github.com by client with port 58280 to server with port 443 successfully by check on sequence number(raw) = 1552639040
-  <img src="images/syn-packet.png" width="700">
+  10. identified the TLS handshake packet by:
+    - `client hello`
+    <img src="images/client-hello-github.com.png" width="700">
+  
+    - `server hello`
+    <img src="images/server-hello-github.com.png" width="700">
 
-  7. Check on the response of github.com as server with port 443 to client with port 58280 successfully responded by sending an acknowledgement and requested synchronization with the client by new sequence number = 4024869041 and acknowledgement number (raw) = 1552639041
+  to verify successful encrypted HTTPS communication between the client and GitHub servers.
 
-  <img src="images/syn-ack-packet.png" width="700">
+  11. Exported the packet capture file generated during tcp-3-way-handshake for future investigation and traffic-review practice
 
-  8. Check on the response of client with port 58280 to github.com as server with port 443 successfully sending an acknowledgement to server by sequence number = 1552639041 and new acknowledgement number (raw) = 4024869042
-
-  <img src="images/ack-packet.png" width="700">
-  9.Exported the packet capture file generated during tcp-3-way-handshake for future investigation and traffic-review practice
-
-  10. The packet capture file was saved as:
-  tcp-3-way-handshake.pcapng
+  12. The packet capture file was saved as:
+  - http-traffic-analysis.pcapng
+  - https-traffic-analysis
   and store inside the `pcaps/` directory
   
 
@@ -77,30 +107,34 @@ During live packet capture, Wireshark displayed multiple network protocols simul
 
 * **Activity Executed:**
   - captured live network traffic generated from github.com
-  - use `nslookup` to find ip address of github.com 
-  - Applied `tcp && ip.addr == 20.205.243.166` on display filter of Wireshark to isolate TCP 3 Way Handshake of github.com.
+  - use command `firefox http://neverssl.com &` and `firefox https://github.com` to open examples website of HTTP and HTTPS
+  - Applied `http.request` on display filter of Wireshark to isolate HTTP packets 
+  - Applied `tls` on display filter of Wireshark to isolate HTTPS packets
+  - inspect HTTP GET requests for HTTP packets and TLS handshake for HTTPS pakcets
+  -compared traffic visibility between unencrypted HTTP and encrypted HTTPS communication
 
 * **Key Observations:**
-  - Wireshark successfully captured SYN, SYN-ACK, ACK packets generated from the website.
-  - The packet capture confirmed successful TCP synchronization and acknowledgement process of the Kali Linux virtual machine as client and external web servers.
-  - The `tcp && ip.addr == 20.205.243.166` filter helped simplify TCP SYN, SYN-ACK, AND ACK packet analysis by isolating only TCP and Ip Address-related traffic.
-  - Packet timestamps, sequence numbers, acknowledgement numbers, and TCP connection behavior became visible during live traffic analysis.
+  - HTTP traffic generated from `neverssl.com` was fully readable inside Wireshark.
+  - The HTTP capture display get requests, host information, and plain-text communication data
+  - HTTPS traffic generated from `github.com` was encrypted and not directly readable inside ireshark
+  - HTTPS analysis to revealed TLS handshake packet including CLient Hello, and Server Hello.
+  - TLS traffic successfully demonstrated how HTTPS protects communication through encryption.
+  - The comparison clearly demonstrated the security difference between HTTP and HTTPS communication.
 ---
 
 ## 🚀 5. Key Takeaways & Career Alignment
 * **L1 SOC Skill Demonstrated:**
   - Basic packet capture and traffic analysis
-  - Understanding of connection behavior by TCP 3-way handshake
-  - Network interface troubleshooting
-  - Beginner-level wireshark filtering and packet inspection 
+  - HTTP and HTTPS Traffic inspection
+  - Beginner-level wireshark filtering and packet analysis
+  - network troubleshooting and interaface verification 
 * **Next Steps:**
-  - Compare HTTP and HTTPS traffic visibility
   - Continue building beginner SOC and network-analysis projects
 ## 🛠 Skills Practiced
   - VirtualBox networking
-  - Basic Networking Troubleshooting
-  - Packet Capture
-  - TCP 3-Way Handshake Analysis
-  - Wireshark Filtering
-  - Export `.pcap` files for future log-analysis practice
-  - Documentation and Technical Reporting
+  - Wireshark packet capture
+  - HTTP traffic analysis
+  - HTTPS/TLS traffic analysis
+  - Wireshark display filtering
+  - Traffic inspection and protocol comparison
+  - Technical documentation and reporting
