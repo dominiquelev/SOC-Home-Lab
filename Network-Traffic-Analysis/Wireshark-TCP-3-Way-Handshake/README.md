@@ -44,7 +44,7 @@ During live packet capture, Wireshark displayed multiple network protocols simul
      ```
   3. Confirmed that the `eth0` interface appeared correctly and verified that live network traffic could be captured successfully.
 
-     <img src="images/eth0-interface-selected.png" width="700">
+     <img src="Images/eth0-interface-selected.png" width="700">
      
   4. Opened github.com using Mozilla Firefox for TCP 3 way handshake
        
@@ -52,18 +52,18 @@ During live packet capture, Wireshark displayed multiple network protocols simul
      
   5. Applied the `tcp && ip.addr==20.205.243.166` display filter in Wireshark to verify that Wireshark successfully captured the TCP 3 way handshake traffic generated from TCP traffic associated with the github.com IP address.
       
-  <img src="images/tcp-ip-addr-filter.png" width="700">
+  <img src="Images/tcp-ip-addr-filter.png" width="700">
 
   6. Checked the TCP SYN request of github.com by client with port 58280 to server with port 443 successfully by check on sequence number(raw) = 1552639040
-  <img src="images/syn-packet.png" width="700">
+  <img src="Images/syn-packet.png" width="700">
 
   7. Check on the response of github.com as server with port 443 to client with port 58280 successfully responded by sending an acknowledgement and requested synchronization with the client by new sequence number = 4024869041 and acknowledgement number (raw) = 1552639041
 
-  <img src="images/syn-ack-packet.png" width="700">
+  <img src="Images/syn-ack-packet.png" width="700">
 
   8. Check on the response of client with port 58280 to github.com as server with port 443 successfully sending an acknowledgement to server by sequence number = 1552639041 and new acknowledgement number (raw) = 4024869042
 
-  <img src="images/ack-packet.png" width="700">
+  <img src="Images/ack-packet.png" width="700">
   9.Exported the packet capture file generated during tcp-3-way-handshake for future investigation and traffic-review practice
 
   10. The packet capture file was saved as:
