@@ -48,48 +48,48 @@ Verify successful HTTPS communication through Client Hello and Server Hello mess
 * **The Resolution Workflow:** 
   1. Open VirtualBox and Start Kali Linux.
   2. update and upgrade application on kali linux with  `sudo apt update` and       `sudo apt upgrade`
-     <img src="images/sudo-apt-update-and-upgrade.png" width="700">
+     <img src="Images/sudo-apt-update-and-upgrade.png" width="700">
   3. Relaunch Wireshark using:
     ```bash
       wireshark &
      ```
   4. Confirmed that the `eth0` interface appeared correctly and verified that live network traffic could be captured successfully.
 
-     <img src="images/eth0-interface.png" width="700">
+     <img src="Images/eth0-interface.png" width="700">
      
   5. Opened `neverssl.com` using command  `firefox http://neverssl.com &`
 
-     <img src="images/http-website-open.png" width="700"> 
+     <img src="Images/http-website-open.png" width="700"> 
        
      to generate and capture live network traffic using Wireshark
   
   6. Applied the `http.request` display filter in Wireshark to verify that HTTP     packets were captured successfully .
      
-    <img src="images/http-filter.png" width="700">
+    <img src="Images/http-filter.png" width="700">
        
   7. Inspected the HTTP GET request packet:
     GET / HTTP/1.1
 
-    <img src="images/http-get-request.png" width="700">
+    <img src="Images/http-get-request.png" width="700">
 
     to verify readable unencrypted HTTP communication.
   
   8. Opened github.com using command  `firefox https://github.com &`
 
-    <img src="images/https-website-open.png" width="700">
+    <img src="Images/https-website-open.png" width="700">
        
      to generate and capture live network traffic using Wireshark
      
   9. Applied the `tls` display filter in Wireshark to isolate encrypted HTTPS traffic
       
-    <img src="images/tls-filter.png" width="700">
+    <img src="Images/tls-filter.png" width="700">
 
   10. identified the TLS handshake packet by:
     - `client hello`
-    <img src="images/client-hello-github.com.png" width="700">
+    <img src="Images/client-hello-github.com.png" width="700">
   
     - `server hello`
-    <img src="images/server-hello-github.com.png" width="700">
+    <img src="Images/server-hello-github.com.png" width="700">
 
   to verify successful encrypted HTTPS communication between the client and GitHub servers.
 
