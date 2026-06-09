@@ -1,14 +1,14 @@
 # LINUX HARDENING & SSH AUTHENTICATION MONITORING
 
 ## 📌 1. Project Objective
-The objective of this lab was to learn about linux hardening for beginner build and monitoring authentication log with openssh with Ubuntu and Kali Linux server inside a VirtualBox virtualized lab.
+The objective of this lab was to learn beginner linux hardening concepts and monitor SSH authentication log using Ubuntu Server and Kali Linux inside a VirtualBox environment.
 
-focused on :
-- configuring ssh remote access between ubuntu server and kali linux
-- understand the communication between client and server
+The lab focused on :
+- configuring SSH remote access between Ubuntu Server and Kali Linux
+- understanding the communication between client and server machines
 - monitoring SSH authentication log activity
-- observing live SSH authentication log 
-- building foundational linux hardening knowledge for future SIEM and SOC analysis project
+- observing live SSH authentication logs 
+- building foundational Linux hardening knowledge for future SIEM and SOC analysis projects
 ---
 
 ## ⚙️ 2. Lab Specifications & Tools
@@ -27,9 +27,9 @@ focused on :
 
 | Component | Allocation | Purpose |
 | :--- | :--- | :--- |
-| **Memory (RAM)** | 4096 MB | Prevents application lag and data drops during active packet capture processing. |
-| **Processors** | 2 vCPUs | Required for smooth real-time multi-threaded packet dissection and interface rendering. |
-| **Network Mode** | Bridged Adapter | Allows the virtual machine to bypass NAT restrictions and sniff live local network interfaces. |
+| **Memory (RAM)** | 2048 MB | Provide stable Ubuntu Server performance during SSH operations. |
+| **Processors** | 2 vCPUs | Support virtualization and SSH service execution. |
+| **Network Mode** | Bridged Adapter | allows direct communication between Kali Linux and Ubuntu Server |
 
 
 ---
@@ -37,110 +37,155 @@ focused on :
 ## ⚠️ 3. Engineering Challenges & Troubleshooting
 
 ### Incident / Roadblock: 
-Ensuring proper visibility of both HTTP and HTTPS traffic and identifying the correct packets inside Wireshark.
+Ubuntu Server installation initially failed to reboot correctly inside VirtualBox, while additional confusion occurred during SSH communication setup between Kali Linux and Ubuntu Server.
 
 * **The Problem:**
-During the initial attempt to capture live HTTP and HTTPS traffic simultaneously, packet analysis became difficult because Wireshark displayed multiple protocols at the same time. This made it challenging to isolate and identify the required HTTP and HTTPS packets clearly.
+During Ubuntu Server installation process, the virtual machine displayed:
+- restart button not responding properly
+- "No bootable medium" errors after reboot attempts
+This created uncertainty regarding whether Ubuntu Server had been installed successfully or whether the ISO image was still being prioritized during boot.
 
-To resolve this issue, the websites were tested one at a time instead of simultaneously.
+Additional confusion also occurred regarding:
+- VirtualBox network configuration
+- identifying the correct Ubuntu Server IP address
+- understanding where SSH authentication logs were stored
+- differentiating between client and server machine responsibilities
 
-Additional display filtering and packet inspection were required to:
+Another issue occurred because the Ubuntu installation ISO remained attached to the virtual optical drive after installation completion. As a result, VirtualBox continued attempting to boot from the installation media instead of the virtual hard disk.
 
-Identify HTTP communication using GET requests
-Verify successful HTTP traffic capture
-Identify HTTPS communication using TLS handshake packets
-Verify successful HTTPS communication through Client Hello and Server Hello messages
+Additionally, `/var/log/auth.log` was unavailable on the Ubuntu Server installation because the newer Ubuntu version used `journalctl` logging instead for monitoring live SSH authentication activity.  
+
 
 * **The Resolution Workflow:** 
-  1. Open VirtualBox and Start Kali Linux.
-  2. update and upgrade application on kali linux with  `sudo apt update` and       `sudo apt upgrade`
-     <img src="Images/sudo-apt-update-and-upgrade.png" width="700">
-  3. Relaunch Wireshark using:
-    ```bash
-      wireshark &
+  1. Installed Ubuntu Server inside VirtualBox.
+  2. updated and upgraded application on Ubuntu Server packages using:
+     ```bash
+     sudo apt update && sudo apt upgrade -y
      ```
-  4. Confirmed that the `eth0` interface appeared correctly and verified that live network traffic could be captured successfully.
-
-     <img src="Images/eth0-interface.png" width="700">
+     <img src="Images/update-and-upgrade.png" width="700">
      
-  5. Opened `neverssl.com` using command  `firefox http://neverssl.com &`
-
-     <img src="Images/http-website-open.png" width="700"> 
-       
-     to generate and capture live network traffic using Wireshark
+  3. Checked whether SSH was already installed on Ubuntu Server using:
+     ```bash
+      ssh -V
+     ```
+     <img src="Images/check-ssh-version-1.png" width="700">
+     
+  4. installed openSSH Server using :
+      ```bash
+      sudo apt install openssh-server -y
+      ```
+     <img src="Images/install-ssh-server.png" width="700">
+     
+  5. checked the SSH service status using:
+      ```bash
+      sudo systemctl status ssh
+      ```
+     <img src = "Images/system-status-inactive.png" width="700">
+     
+    the SSH serrvice status initially showed:
+     `inactive (dead)`
   
-  6. Applied the `http.request` display filter in Wireshark to verify that HTTP     packets were captured successfully .
+    to automatically start and enable the SSH service during boot, the following command we used:
+     ``` bash
+     sudo systemctl enable --now ssh
+     ``` 
+     <img src = "Images/systemctl-enable-active.png" width="700">
      
-    <img src="Images/http-filter.png" width="700">
-       
-  7. Inspected the HTTP GET request packet:
-    GET / HTTP/1.1
+    the SSH service status successfully changed to:
+    `active (running)`
+   
+  6. Requsted the Ubuntu Server IP address using:
+     ``` bash
+     ip a
+     ```
+     initially, the Ubuntu Server machine was still using NAT network mode.
+     
+     <img src="Images/ip-address-nat.png" width="700">
+     
+  7. Change the VirtualBox network configuration for the Ubuntu Server from:
+     `NAT to Bridged Adapter`
 
-    <img src="Images/http-get-request.png" width="700">
-
-    to verify readable unencrypted HTTP communication.
+     <img src="Images/NAT-network.png" width="700">
+     <img src="Images/bridge-adapter-network.png" width="700">      
   
-  8. Opened github.com using command  `firefox https://github.com &`
-
-    <img src="Images/https-website-open.png" width="700">
+  8. Requested the Ubuntu Sever IP address again using:
+      ``` bash
+      ip a
+      ```    
+    <img src="Images/ip-address-bridged-adapter.png" width="700">
        
-     to generate and capture live network traffic using Wireshark
-     
-  9. Applied the `tls` display filter in Wireshark to isolate encrypted HTTPS traffic
+  8. open the Kali Linux virtual machine and connected remotely to Ubuntu Server using SSH:
+    ``` bash
+    sudo username@ipaddress
+    ``` 
+    <img src="Images/ssh-client-connected-to-server.png" width="700">
+        
+  9. Verified network communication between Kali Linux and Ubuntu server using:
+     ```bash
+     ping ubuntu_server_ip
+     ```     
+    <img src="Images/check-network-communication.png" width="700">
+    
+    Successful replied confirmed that the client machine could communicate correctly with the Ubuntu Server machine.
+
+  10. monitored live SSH authentication logs on Ubuntu using:
+      ```bash
+      sudo journalctl -u ssh -f 
+      ```
+      <img src="Images/monitoring-log.png" width="700">
       
-    <img src="Images/tls-filter.png" width="700">
-
-  10. identified the TLS handshake packet by:
-    - `client hello`
-    <img src="Images/client-hello-github.com.png" width="700">
-  
-    - `server hello`
-    <img src="Images/server-hello-github.com.png" width="700">
-
-  to verify successful encrypted HTTPS communication between the client and GitHub servers.
-
-  11. Exported the packet capture file generated during tcp-3-way-handshake for future investigation and traffic-review practice
-
-  12. The packet capture file was saved as:
-  - http-traffic-analysis.pcapng
-  - https-traffic-analysis
-  and store inside the `pcaps/` directory
-  
-
+    this allowed live observation of SSH authentication activity generated from the client machine.
 ---
 
 ## 📊 4. Practical Execution & Findings
 
 * **Activity Executed:**
-  - captured live network traffic generated from github.com
-  - use command `firefox http://neverssl.com &` and `firefox https://github.com` to open examples website of HTTP and HTTPS
-  - Applied `http.request` on display filter of Wireshark to isolate HTTP packets 
-  - Applied `tls` on display filter of Wireshark to isolate HTTPS packets
-  - inspect HTTP GET requests for HTTP packets and TLS handshake for HTTPS pakcets
-  -compared traffic visibility between unencrypted HTTP and encrypted HTTPS communication
-
+  - install openSSH-server on Ubuntu Server
+  - checked the status of SSH service and enable the systemm with `systemctl status ssh` `systemctl enable --now ssh`
+  - requested Ubuntu Server IP Address using `ip a`
+  - Connected the Kali Linux client machine to Ubuntu Server using:
+    `ssh username@ipaddress_ubuntu_server`
+  - Verified network communication between the client machine and server machine using:
+    `ping ip_ubuntu_server`
+  - Monitored and observed live SSH authentication activity generated from the client machine using:
+    `sudo journalctl -u ssh -f`
 * **Key Observations:**
-  - HTTP traffic generated from `neverssl.com` was fully readable inside Wireshark.
-  - The HTTP capture display get requests, host information, and plain-text communication data
-  - HTTPS traffic generated from `github.com` was encrypted and not directly readable inside ireshark
-  - HTTPS analysis to revealed TLS handshake packet including CLient Hello, and Server Hello.
-  - TLS traffic successfully demonstrated how HTTPS protects communication through encryption.
-  - The comparison clearly demonstrated the security difference between HTTP and HTTPS communication.
+  - SSH successfully enabled encrypted remote communication between Kali Linux and Ubuntu Server.
+  - The Ubuntu Server machine recorded SSH authentication activity generated from the client machine.
+  - SSH authentication logs displayed:
+      - successful login events
+      - session opened events
+      - session closed events
+  - `journalctl` was used to monitor live SSH authentication activity because `/var/log/auth.log` was unavailable on the Ubuntu Server installation.
+  - Bridged Adapter networking allowed direct communication between the Kali Linux client machine and Ubuntu Server.
+  - SSH services must be actively running before remote client connections can be established successfully.
 ---
 
 ## 🚀 5. Key Takeaways & Career Alignment
 * **L1 SOC Skill Demonstrated:**
-  - Basic packet capture and traffic analysis
-  - HTTP and HTTPS Traffic inspection
-  - Beginner-level wireshark filtering and packet analysis
-  - network troubleshooting and interaface verification 
+  - Basic Linux hardening
+  - SSH remote access configuration
+  - SSH authentication monitoring
+  - Linux service management using systemctl
+  - Authentication log monitoring using journalctl
+  - VirtualBox network troubleshooting
+  - Client and server communication understanding
+  - Basic Linux networking and connectivity verification
 * **Next Steps:**
-  - Continue building beginner SOC and network-analysis projects
+  - Continue building beginner SOC and Linux security projects
+  - Install and configure UFW firewall
+  - Install and configure Fail2Ban
+  - Generate failed SSH login attempts
+  - Investigate authentication logs further
+  - Integrate authentication logs into Splunk later
 ## 🛠 Skills Practiced
-  - VirtualBox networking
-  - Wireshark packet capture
-  - HTTP traffic analysis
-  - HTTPS/TLS traffic analysis
-  - Wireshark display filtering
-  - Traffic inspection and protocol comparison
+  - VirtualBox networking configuration
+  - Ubuntu Server administration
+  - Kali Linux client usage
+  - OpenSSH Server installation and configuration
+  - Linux terminal usage
+  - SSH remote connectivity
+  - Linux service management
+  - Authentication log monitoring
+  - Network communication troubleshooting
   - Technical documentation and reporting
