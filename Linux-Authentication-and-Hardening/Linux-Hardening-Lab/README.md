@@ -8,7 +8,7 @@ The lab focused on :
 - understanding the communication between client and server machines
 - monitoring SSH authentication log activity
 - observing live SSH authentication logs 
-- building foundational Linux hardening knowledge for future SIEM and SOC analysis projects
+- building foundational Linux hardening knowledge with UFW and Fail2ban for future SIEM and SOC analysis projects
 ---
 
 ## ⚙️ 2. Lab Specifications & Tools
@@ -21,6 +21,8 @@ The lab focused on :
   - OpenSSH Server
   - Linux Terminal
   - Journalctl
+  - UFW
+  - Fail2ban
 
 ### Hardware Resource Profiles:
 
@@ -37,8 +39,7 @@ The lab focused on :
 ## ⚠️ 3. Engineering Challenges & Troubleshooting
 
 ### Incident / Roadblock: 
-Ubuntu Server installation initially failed to reboot correctly inside VirtualBox, while additional confusion occurred during SSH communication setup between Kali Linux and Ubuntu Server.
-
+Ubuntu Server installation initially failed to reboot correctly inside VirtualBox, while additional confusion occurred during SSH communication setup between Kali Linux and Ubuntu Server. 
 * **The Problem:**
 During Ubuntu Server installation process, the virtual machine displayed:
 - restart button not responding properly
@@ -53,7 +54,9 @@ Additional confusion also occurred regarding:
 
 Another issue occurred because the Ubuntu installation ISO remained attached to the virtual optical drive after installation completion. As a result, VirtualBox continued attempting to boot from the installation media instead of the virtual hard disk.
 
-Additionally, `/var/log/auth.log` was unavailable on the Ubuntu Server installation because the newer Ubuntu version used `journalctl` logging instead for monitoring live SSH authentication activity.  
+Additionally, `/var/log/auth.log` was unavailable on the Ubuntu Server installation because the newer Ubuntu version used `journalctl` logging instead for monitoring live SSH authentication activity. 
+
+During firewall configuration, SSH access initially failed after enabling UFW because SSH traffic had not yet been explicitly allowed through the firewall rules. This caused SSH connection attempts from the Kali Linux client machine to be refused on port 22.
 
 
 * **The Resolution Workflow:** 
@@ -116,7 +119,7 @@ Additionally, `/var/log/auth.log` was unavailable on the Ubuntu Server installat
        
   8. open the Kali Linux virtual machine and connected remotely to Ubuntu Server using SSH:
     ``` bash
-    sudo username@ipaddress
+    ssh username@ipaddress
     ``` 
     <img src="Images/ssh-client-connected-to-server.png" width="700">
         
@@ -135,6 +138,47 @@ Additionally, `/var/log/auth.log` was unavailable on the Ubuntu Server installat
       <img src="Images/monitoring-log.png" width="700">
       
     this allowed live observation of SSH authentication activity generated from the client machine.
+  11. installed firewall with UFW :
+      ```bash
+      sudo apt install ufw
+      ```
+      <img src="Images/install-ufw.png" width="700">
+
+  12. checked the status of UFW using :
+      ```bash 
+      sudo ufw status
+      ```
+      <img src="check-status-ufw.png" width="700">
+     the UFW serrvice status on SSH initially showed:
+     `inactive`
+  13. Actived the UFW on SSH service using :
+      ```bash
+      sudo ufw allow ssh
+      ```
+    and make it enable to use on client-machine using:
+      ```bash
+      sudo ufw enable
+      ```
+    checked the status of UFW on SSH service using:
+      ```bash
+      sudo ufw status verbose
+      ```
+    for more details of status
+    <img src= "allow-ufw-ssh.png" width="700">
+    
+  14. installed fail2ban using :
+      ```bash
+      sudo apt install fail2ban -y
+      ```
+    <img src="install-fail2ban.png" width="700">
+    
+  15. check the status of fail2ban using :
+      ```bash
+      sudo systemctl status fail2ban
+      ```
+      the fail2ban serrvice status on SSH initially showed:
+     `active(Running)`
+    <img src="status-fail2ban-active.png">
 ---
 
 ## 📊 4. Practical Execution & Findings
