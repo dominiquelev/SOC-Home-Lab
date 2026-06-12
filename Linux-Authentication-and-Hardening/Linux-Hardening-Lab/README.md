@@ -8,21 +8,21 @@ The lab focused on :
 - understanding the communication between client and server machines
 - monitoring SSH authentication log activity
 - observing live SSH authentication logs 
-- building foundational Linux hardening knowledge with UFW and Fail2ban for future SIEM and SOC analysis projects
+- building foundational Linux hardening knowledge with UFW and Fail2Banfor future SIEM and SOC analysis projects
 ---
 
 ## ⚙️ 2. Lab Specifications & Tools
 
 * **Hypervisor / Platform:** Oracle VM VirtualBox 
 * **Operating System(s):**
-  - Kali Linux (Client Macchine)
+  - Kali Linux (Client Machine)
   - Ubuntu Server (Server Machine)
 * **Security Tools Used:**
   - OpenSSH Server
   - Linux Terminal
   - Journalctl
   - UFW
-  - Fail2ban
+  - Fail2Ban
 
 ### Hardware Resource Profiles:
 
@@ -66,26 +66,20 @@ During firewall configuration, SSH access initially failed after enabling UFW be
      sudo apt update && sudo apt upgrade -y
      ```
      <img src="Images/update-and-upgrade.png" width="700">
-     
-  3. Checked whether SSH was already installed on Ubuntu Server using:
-     ```bash
-      ssh -V
-     ```
-     <img src="Images/check-ssh-version-1.png" width="700">
-     
-  4. installed openSSH Server using :
+         
+  3. installed openSSH Server using :
       ```bash
       sudo apt install openssh-server -y
       ```
      <img src="Images/install-ssh-server.png" width="700">
      
-  5. checked the SSH service status using:
+  4. checked the SSH service status using:
       ```bash
       sudo systemctl status ssh
       ```
      <img src = "Images/system-status-inactive.png" width="700">
      
-    the SSH serrvice status initially showed:
+    the SSH service status initially showed:
      `inactive (dead)`
   
     to automatically start and enable the SSH service during boot, the following command we used:
@@ -97,7 +91,7 @@ During firewall configuration, SSH access initially failed after enabling UFW be
     the SSH service status successfully changed to:
     `active (running)`
    
-  6. Requsted the Ubuntu Server IP address using:
+  5. Requested the Ubuntu Server IP address using:
      ``` bash
      ip a
      ```
@@ -105,13 +99,13 @@ During firewall configuration, SSH access initially failed after enabling UFW be
      
      <img src="Images/ip-address-nat.png" width="700">
      
-  7. Change the VirtualBox network configuration for the Ubuntu Server from:
+  6. Change the VirtualBox network configuration for the Ubuntu Server from:
      `NAT to Bridged Adapter`
 
      <img src="Images/NAT-network.png" width="700">
      <img src="Images/bridge-adapter-network.png" width="700">      
   
-  8. Requested the Ubuntu Sever IP address again using:
+  7. Requested the Ubuntu Server IP address again using:
       ``` bash
       ip a
       ```    
@@ -129,7 +123,7 @@ During firewall configuration, SSH access initially failed after enabling UFW be
      ```     
     <img src="Images/check-network-communication.png" width="700">
     
-    Successful replied confirmed that the client machine could communicate correctly with the Ubuntu Server machine.
+    Successful replies confirmed that the client machine could communicate correctly with the Ubuntu Server machine.
 
   10. monitored live SSH authentication logs on Ubuntu using:
       ```bash
@@ -144,39 +138,37 @@ During firewall configuration, SSH access initially failed after enabling UFW be
       ```
       <img src="Images/install-ufw.png" width="700">
 
-  12. checked the status of UFW using :
+  12. checked UFW status using :
       ```bash 
       sudo ufw status
       ```
       <img src="check-status-ufw.png" width="700">
-     the UFW serrvice status on SSH initially showed:
+     Initially UFW status showed:
      `inactive`
-  13. Actived the UFW on SSH service using :
+  13. During firewall configuration, SSH connectivity unexpectedly stopped after enabling UFW.
+    SSH connection attempts from Kali Linux client machine became unavailable because SSH traffic had not yet been             explicity allowed through firewall rules yet.
+  
+    To resolve the issue:
+   SSH traffic was allowed through UFW and the firewall configuration was verified.
       ```bash
       sudo ufw allow ssh
-      ```
-    and make it enable to use on client-machine using:
-      ```bash
       sudo ufw enable
-      ```
-    checked the status of UFW on SSH service using:
-      ```bash
       sudo ufw status verbose
       ```
-    for more details of status
     <img src= "allow-ufw-ssh.png" width="700">
+    After updating firewall rules, SSH connectivity between Kali Linux and Ubuntu Server was restored successfully
     
-  14. installed fail2ban using :
+  14. installed Fail2Ban using :
       ```bash
       sudo apt install fail2ban -y
       ```
     <img src="install-fail2ban.png" width="700">
     
-  15. check the status of fail2ban using :
+  15. check the status of Fail2Ban using :
       ```bash
       sudo systemctl status fail2ban
       ```
-      the fail2ban serrvice status on SSH initially showed:
+      the Fail2Ban service status on SSH initially showed:
      `active(Running)`
     <img src="status-fail2ban-active.png">
 ---
@@ -184,8 +176,8 @@ During firewall configuration, SSH access initially failed after enabling UFW be
 ## 📊 4. Practical Execution & Findings
 
 * **Activity Executed:**
-  - install openSSH-server on Ubuntu Server
-  - checked the status of SSH service and enable the systemm with `systemctl status ssh` `systemctl enable --now ssh`
+  - installed openSSH-server on Ubuntu Server
+  - checked the status of SSH service and enable the systemm with `sudo systemctl status ssh` `sudo systemctl enable --now ssh`
   - requested Ubuntu Server IP Address using `ip a`
   - Connected the Kali Linux client machine to Ubuntu Server using:
     `ssh username@ipaddress_ubuntu_server`
@@ -193,6 +185,9 @@ During firewall configuration, SSH access initially failed after enabling UFW be
     `ping ip_ubuntu_server`
   - Monitored and observed live SSH authentication activity generated from the client machine using:
     `sudo journalctl -u ssh -f`
+  - installed UFW and configuration firewall with `sudo ufw allow ssh` `sudo ufw enable`
+  - checked the status of UFW with `sudo ufw status verbose`
+  - installed Fail2Ban and check status of Fail2Ban service with `sudo systemctl status fail2ban`
 * **Key Observations:**
   - SSH successfully enabled encrypted remote communication between Kali Linux and Ubuntu Server.
   - The Ubuntu Server machine recorded SSH authentication activity generated from the client machine.
@@ -203,12 +198,21 @@ During firewall configuration, SSH access initially failed after enabling UFW be
   - `journalctl` was used to monitor live SSH authentication activity because `/var/log/auth.log` was unavailable on the Ubuntu Server installation.
   - Bridged Adapter networking allowed direct communication between the Kali Linux client machine and Ubuntu Server.
   - SSH services must be actively running before remote client connections can be established successfully.
+  - UFW  restricted network access and required explicit SSH allow rules before remote connectivity could established.
+  - Improper firewall configuration can unintentionally block legitimate administration access.
+  - Fail2Ban was successfully deployed and actively monitored SSH authentication activity.
+  - Fail2Ban automatically provides protection against repeated authentication faileures by temporarily banning offending IP addresses.
+  - UFW and Fail2Ban provided complementary security controls by restricting unauthorized access and protecting SSH services from repeated authentication failures.
 ---
 
 ## 🚀 5. Key Takeaways & Career Alignment
+* **Conclusion:**
+  This lab successfully established a secure SSH communication environment between Kali Linux and Ubuntu Server while introducing foundational Linux hardening concepts through OpenSSH, UFW, and Fail2Ban. The project also demonstrated authentication monitoring using journalctl and provided practical experience with troubleshooting network, service, and firewall-related issues.
 * **L1 SOC Skill Demonstrated:**
   - Basic Linux hardening
   - SSH remote access configuration
+  - Host-based firewall configuration using UFW
+  - Basic intrusion prevention using Fail2Ban
   - SSH authentication monitoring
   - Linux service management using systemctl
   - Authentication log monitoring using journalctl
@@ -217,11 +221,9 @@ During firewall configuration, SSH access initially failed after enabling UFW be
   - Basic Linux networking and connectivity verification
 * **Next Steps:**
   - Continue building beginner SOC and Linux security projects
-  - Install and configure UFW firewall
-  - Install and configure Fail2Ban
-  - Generate failed SSH login attempts
-  - Investigate authentication logs further
-  - Integrate authentication logs into Splunk later
+  - Perform SSH failed-login investigations
+  - Analyze authentication logs generated from successful and failed login attempts
+  - Forward authentication logs into Splunk for centralized monitoring
 ## 🛠 Skills Practiced
   - VirtualBox networking configuration
   - Ubuntu Server administration
