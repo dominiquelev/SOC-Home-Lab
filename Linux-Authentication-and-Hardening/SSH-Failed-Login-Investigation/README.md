@@ -31,8 +31,8 @@ The lab focused on :
 | Component | Allocation | Purpose |
 | :--- | :--- | :--- |
 | **Memory (RAM)** | 2048 MB | Provide stable Ubuntu Server performance during SSH operations and log monitoring. |
-| **Processors** | 2 vCPUs | Support virtualization and SSH service execution. |
-| **Network Mode** | Bridged Adapter | allows direct communication between Kali Linux and Ubuntu Server |
+| **Processors** | 2 vCPUs | Support virtualization,authentication logging, and security monitoring services. |
+| **Network Mode** | Bridged Adapter | allows direct communication between Kali Linux and Ubuntu Server for SSH authentication testing |
 
 
 ---
@@ -40,138 +40,102 @@ The lab focused on :
 ## ⚠️ 3. Engineering Challenges & Troubleshooting
 
 ### Incident / Roadblock: 
-Ubuntu Server installation initially failed to reboot correctly inside VirtualBox, while additional confusion occurred during SSH communication setup between Kali Linux and Ubuntu Server. 
+Generating and analyzing failed SSH authentication attempts while distinguishing between invalid username activity, incorrect password attempts, and Fail2Ban enforcement actions.
+
 * **The Problem:**
-During Ubuntu Server installation process, the virtual machine displayed:
-- restart button not responding properly
-- "No bootable medium" errors after reboot attempts
-This created uncertainty regarding whether Ubuntu Server had been installed successfully or whether the ISO image was still being prioritized during boot.
+During the investigation, multiple failed SSH login attempts were intentionally generated from the Kali Linux client machine using both:
+- valid usernames with incorrect passwords
+- invalid usernames with incorrect passwords
 
-Additional confusion also occurred regarding:
-- VirtualBox network configuration
-- identifying the correct Ubuntu Server IP address
-- understanding where SSH authentication logs were stored
-- differentiating between client and server machine responsibilities
+Although the login attempts were successfully rejected by Ubuntu Server, it was initially unclear:
+- how failed authentication events would appear in the SSH logs
+- whether log entries would differ between invalid usernames and incorrect passwords
+- how Fail2Ban would respond after repeated authentication failures
+how to verify that an IP address had been automatically banned
 
-Another issue occurred because the Ubuntu installation ISO remained attached to the virtual optical drive after installation completion. As a result, VirtualBox continued attempting to boot from the installation media instead of the virtual hard disk.
+Additional investigation was required to correlate authentication events observed from the client machine with the corresponding log entries generated on the Ubuntu Server.
 
-Additionally, `/var/log/auth.log` was unavailable on the Ubuntu Server installation because the newer Ubuntu version used `journalctl` logging instead for monitoring live SSH authentication activity. 
-
-During firewall configuration, SSH access initially failed after enabling UFW because SSH traffic had not yet been explicitly allowed through the firewall rules. This caused SSH connection attempts from the Kali Linux client machine to be refused on port 22.
-
+As repeated failed login attempts continued, Fail2Ban automatically detected suspicious authentication activity and temporarily banned the Kali Linux client IP address, preventing further SSH connections until the IP address was manually unbanned.
 
 * **The Resolution Workflow:** 
-  1. Installed Ubuntu Server inside VirtualBox.
-  2. updated and upgraded application on Ubuntu Server packages using:
+  1. Started both Ubuntu Server and Kali Linux virtual machines.
+  2. Updated Kali Linux packages using:
      ```bash
      sudo apt update && sudo apt upgrade -y
      ```
-     <img src="Images/update-and-upgrade.png" width="700">
-         
-  3. installed openSSH Server using :
-      ```bash
-      sudo apt install openssh-server -y
-      ```
-     <img src="Images/install-ssh-server.png" width="700">
-     
-  4. checked the SSH service status using:
-      ```bash
-      sudo systemctl status ssh
-      ```
-     <img src = "Images/system-status-inactive.png" width="700">
-     
-    the SSH service status initially showed:
-     `inactive (dead)`
-  
-    to automatically start and enable the SSH service during boot, the following command we used:
-     ``` bash
-     sudo systemctl enable --now ssh
-     ``` 
-     <img src = "Images/systemctl-enable-active.png" width="700">
-     
-    the SSH service status successfully changed to:
-    `active (running)`
-   
-  5. Requested the Ubuntu Server IP address using:
-     ``` bash
-     ip a
-     ```
-     initially, the Ubuntu Server machine was still using NAT network mode.
-     
-     <img src="Images/ip-address-nat.png" width="700">
-     
-  6. Change the VirtualBox network configuration for the Ubuntu Server from:
-     `NAT to Bridged Adapter`
-
-     <img src="Images/NAT-network.png" width="700">
-     <img src="Images/bridge-adapter-network.png" width="700">      
-  
-  7. Requested the Ubuntu Server IP address again using:
-      ``` bash
-      ip a
-      ```    
-    <img src="Images/ip-address-bridged-adapter.png" width="700">
-       
-  8. open the Kali Linux virtual machine and connected remotely to Ubuntu Server using SSH:
+  3. Verified connectivity between Kali Linux and Ubuntu Server.         
+  4. Initiated an SSH connection from Kali Linux to Ubuntu Server using:
     ``` bash
     ssh username@ipaddress
     ``` 
-    <img src="Images/ssh-client-connected-to-server.png" width="700">
-        
-  9. Verified network communication between Kali Linux and Ubuntu server using:
-     ```bash
-     ping ubuntu_server_ip
-     ```     
-    <img src="Images/check-network-communication.png" width="700">
-    
-    Successful replies confirmed that the client machine could communicate correctly with the Ubuntu Server machine.
+  5. Generated failed authentication attempts by using a valid username with and incorrect password.
+      ```bash
+      ssh dominique@192.168.100.70
+      ```
+     <img src = "Images/first-failed-login-wrong-password-3-times.png" width="700">
+      After entering an incorrect password multiple times, Ubuntu Server           rejected the authentication request and returned:
 
-  10. monitored live SSH authentication logs on Ubuntu using:
+    Permission denied (publickey,password)
+  
+  5. Monitored SSH authentication logs on Ubuntu Server using:
+     ```bash
+     sudo journalctl -u ssh -f
+     ```
+      <img src = "Images/journalctl-monitoring-log-login-failed.png" width="700">
+     
+    This allowed live observation of authentication events generated by the client machine, including failed login attempts caused by incorrect passwords.
+   
+  6. Generated failed authentication attempts by using a invalid username with and incorrect password.
+      ```bash
+      ssh hacker@192.168.100.70
+      ssh justtry@192.168.100.70
+      test123@192.168.100.70 
+      ```
+     <img src = "Images/failed-login-wrong-username-and-wrong-pass-3-times.png" width="700">
+      After entering an incorrect password multiple times, Ubuntu Server           rejected the authentication request and returned:
+
+    Permission denied (publickey,password)
+  
+  7. monitored live SSH authentication logs on Ubuntu using:
       ```bash
       sudo journalctl -u ssh -f 
       ```
-      <img src="Images/monitoring-log.png" width="700">
+      <img src="Images/journalctl-monitoring-log-login-failed-2.png" width="700">
       
     this allowed live observation of SSH authentication activity generated from the client machine.
-  11. installed firewall with UFW :
+         
+  7. Attempted Authentication using avalid username and password after multiple failed login attempts:
       ```bash
-      sudo apt install ufw
+      ssh dominique@192.168.100.70
       ```
-      <img src="Images/install-ufw.png" width="700">
+      <img src="Images/client-machine-got-ban-by-fail2ban.png" width="700">
+  Ubuntu Server rejected the connection request and returned:
 
-  12. checked UFW status using :
-      ```bash 
-      sudo ufw status
-      ```
-      <img src="check-status-ufw.png" width="700">
-     Initially UFW status showed:
-     `inactive`
-  13. During firewall configuration, SSH connectivity unexpectedly stopped after enabling UFW.
-    SSH connection attempts from Kali Linux client machine became unavailable because SSH traffic had not yet been             explicity allowed through firewall rules yet.
-  
-    To resolve the issue:
-   SSH traffic was allowed through UFW and the firewall configuration was verified.
+    `ssh: connect to host 192.168.100.70 port 22: Connection refused`
+  This indicated that the client machine had likely been banned by Fail2Ban after exceeding the failed authentication threshold.
+            
+  8. Verified the Fail2ban status on Ubuntu Server using:
+     ```bash
+     sudo fail2ban-client status sshd
+     ```     
+    <img src="Images/check-status-fail2ban-ssh-client" width="700">
+   The Output confirmed that the Kali Linuc IP address had been added to the banned IP list.
+
+  9. Removed the Kali Linux IP address from the Fail2Ban list using:
+     ```bash
+     sudo fail2ban-client unbanip 192.168.100.67
+     sudo fail2ban-client status sshd
+     ``` 
+    <img src="Images/check-status-fail2ban-ssh-client" width="700">
+   
+  10. Attempted authentication again using a valid username and password:
       ```bash
-      sudo ufw allow ssh
-      sudo ufw enable
-      sudo ufw status verbose
+      ssh dominique@192.168.100.70
       ```
-    <img src= "allow-ufw-ssh.png" width="700">
-    After updating firewall rules, SSH connectivity between Kali Linux and Ubuntu Server was restored successfully
-    
-  14. installed Fail2Ban using :
-      ```bash
-      sudo apt install fail2ban -y
-      ```
-    <img src="install-fail2ban.png" width="700">
-    
-  15. check the status of Fail2Ban using :
-      ```bash
-      sudo systemctl status fail2ban
-      ```
-      the Fail2Ban service status on SSH initially showed:
-     `active(Running)`
-    <img src="status-fail2ban-active.png">
+      <img src="Images/after-unbanip-fail2ban-client-sshd" width="700">
+      The Kali Linux client machine successfully established an SSH connection to Ubuntu Server after the IP address was unbanned.
+      
+
 ---
 
 ## 📊 4. Practical Execution & Findings
