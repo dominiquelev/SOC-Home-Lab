@@ -65,17 +65,18 @@ As repeated failed login attempts continued, Fail2Ban automatically detected sus
      ```
   3. Verified connectivity between Kali Linux and Ubuntu Server.         
   4. Initiated an SSH connection from Kali Linux to Ubuntu Server using:
-    ``` bash
-    ssh username@ipaddress
-    ``` 
+     ``` bash
+     ssh username@ipaddress
+     ``` 
   5. Generated failed authentication attempts by using a valid username with an incorrect password.
-      ```bash
-      ssh dominique@192.168.100.70
-      ```
+     ```bash
+     ssh dominique@192.168.100.70
+     ```
      <img src = "Images/first-failed-login-wrong-password-3-times.png" width="700">
-      After entering an incorrect password multiple times, Ubuntu Server           rejected the authentication request and returned:
+      
+     After entering an incorrect password multiple times, Ubuntu Server rejected the authentication request and returned:
 
-    Permission denied (publickey,password)
+     Permission denied (publickey,password)
   
   6. Monitored SSH authentication logs on Ubuntu Server using:
      ```bash
@@ -91,8 +92,9 @@ As repeated failed login attempts continued, Fail2Ban automatically detected sus
       ssh justtry@192.168.100.70
       ssh test123@192.168.100.70 
       ```
-     <img src = "Images/failed-login-wrong-username-and-wrong-pass-3-times.png" width="700">
-      After entering an incorrect password multiple times, Ubuntu Server rejected the authentication request and returned:
+      <img src = "Images/failed-login-wrong-username-and-wrong-pass-3-times.png" width="700">
+
+    After entering an incorrect password multiple times, Ubuntu Server rejected the authentication request and returned:
 
     Permission denied (publickey,password)
   
@@ -109,9 +111,11 @@ As repeated failed login attempts continued, Fail2Ban automatically detected sus
       ssh dominique@192.168.100.70
       ```
       <img src="Images/client-machine-got-ban-by-fail2ban.png" width="700">
-  Ubuntu Server rejected the connection request and returned:
 
+   Ubuntu Server rejected the connection request and returned:
+  
     `ssh: connect to host 192.168.100.70 port 22: Connection refused`
+  
   This indicated that the client machine had likely been banned by Fail2Ban after exceeding the failed authentication threshold.
             
   10. Verified the Fail2Ban status on Ubuntu Server using:
@@ -119,6 +123,7 @@ As repeated failed login attempts continued, Fail2Ban automatically detected sus
      sudo fail2ban-client status sshd
      ```     
     <img src="Images/check-status-fail2ban-ssh-client" width="700">
+    
    The output confirmed that the Kali Linux IP address had been added to the banned IP list.
 
   11. Removed the Kali Linux IP address from the Fail2Ban list using:
