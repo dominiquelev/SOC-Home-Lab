@@ -1,11 +1,14 @@
 # Splunk Installation
 
 ## 📌 1. Project Objective
-The objective of this lab was to learn fundamental of SIEM tools using Splunk Enterprise from the installation of tools in Ubuntu Server Virtual  Machine environment and verify the Splunk web interface is accessible
+The objective of this lab was to gain hands-on experience with Security Information and Event Management (SIEM) technology by installing and configuring Splunk Enterprise on an Ubuntu Server virtual machine
 
 The lab focused on :
-- installed Splunk Enterprise on Virtualbox
-- 
+- Installing Splunk Enterprise on Ubuntu Server
+- Verifying successful installation and service operation
+- Accessing the Splunk Web Interface
+- Understanding the basic Splunk deployment process
+- Preparing the environment for future log ingestion and security monitoring activities
 ---
 
 ## ⚙️ 2. Lab Specifications & Tools
@@ -25,9 +28,9 @@ The lab focused on :
 
 | Component | Allocation | Purpose |
 | :--- | :--- | :--- |
-| **Memory (RAM)** | 2048 MB | Provide stable Ubuntu Server performance during installation of splunk enterprise. |
-| **Processors** | 2 vCPUs | Support virtualization,and Splunk Web interface. |
-| **Network Mode** | Bridged Adapter | allows direct communication between Kali Linux and Ubuntu Server |
+| **Memory (RAM)** | 2048 MB | Provides sufficient memory for Ubuntu Server and Splunk Enterprise during installation and basic operation. |
+| **Processors** | 2 vCPUs | Supports virtualization, system performance, and the Splunk Web Interface. |
+| **Network Mode** | Bridged Adapter | Allows direct network communication between Kali Linux and Ubuntu Server for future security testing and monitoring activities. |
 
 
 ---
@@ -35,156 +38,117 @@ The lab focused on :
 ## ⚠️ 3. Engineering Challenges & Troubleshooting
 
 ### Incident / Roadblock: 
-installation of Splunk Enterprise inside Ubuntu Server Virtual Machine failed to download the file of Splunk Enterprise
+During the installation process, the Splunk Enterprise package was not found in the Ubuntu Downloads directory after attempting a browser-based download.
 
-* **The Problem:**: During Download file of Splunk Enterprise from the official website:
-* - file didn't get download, on download folder of ubuntu server
-  - the process need to be done by use copy link of wget and process with dpkg services on linux terminal
-  - for start the splunk enterprise after installation need to used force process `sudo /opt/splunk/bin/splunk start --accept-lincense --answer-yes --no-prompt --run-as-root` 
+* **The Problem:**
+  The Splunk Enterprise installation package could not be found in the Ubuntu Downloads directory after attempting to download it.
+* **Root Cause:**
+  The exact cause could not be confirmed. However, the installation package was not successfully saved to the expected Downloads directory after the initial download attempt.
 
-* **The Resolution Workflow:** 
+* **The Resolution Workflow:**
+  To resolve the issue, the Splunk Enterprise package was downloaded directly through the Linux terminal using wget.
+
+After the download was verified, the following steps were performed:
   1.  Updated Ubuntu server packages using:
      ```bash
      sudo apt update && sudo apt upgrade -y
      ```
      <img src="Images/sudo-apt-update-upgrade.png" width="700">
      
-  2. checked the hostname using:
+  2. verified operating system information using:
      ```bash
      hostnamectl
      ```
-  4.          
-  5. Initiated an SSH connection from Kali Linux to Ubuntu Server using:
+       <img src="Images/hostnamectl.png" width="700">
+
+   3. Downloaded Splunk Enterprise package using wget       
+       <img src="Images/download-splunk-wget.png" width="700">
+
+   4. Installed Splunk Enterprise package using dpkg:
      ``` bash
-     ssh username@ipaddress
-     ``` 
-  6. Generated failed authentication attempts by using a valid username with an incorrect password.
-     ```bash
-     ssh dominique@192.168.100.70
+     sudo dpkg -i splunk*.deb
      ```
-     <img src = "Images/first-failed-login-wrong-password-3-times.png" width="700">
-      
-     After entering an incorrect password multiple times, Ubuntu Server rejected the authentication request and returned:
+       <img src="Images/install-splunk-dpkg-splunk*.deb.png" width="700">
 
-     Permission denied (publickey,password)
-  
-  7. Monitored SSH authentication logs on Ubuntu Server using:
+   5. Verified Splunk installation path using:
      ```bash
-     sudo journalctl -u ssh -f
+     ls /opt/splunk
      ```
-      <img src = "Images/journalctl-monitoring-log-login-failed.png" width="700">
+     <img src = "Images/ls-opt-splunk.png" width="700">
+  
+   6. Started Splunk Enterprise using:
+     ```bash
+     sudo /opt/splunk/bin/splunk start --accept-license --answer-yes --no-prompt --run-as-root
+     ```
+      <img src = "Images/force-start-splunk.png" width="700">
+   
+   7. Accessed the Splunk Web Interface through a web browser :
+      ```bash
+      http://localhost:8000
+      ```
+      <img src = "Images/force-start-splunk-2.png" width="700">
+       <img src="Images/login-page-splunk.png" width="700">
+  
+   8. Verified dashboard access by Logged into Splunk successfully:
      
-    This allowed live observation of authentication events generated by the client machine, including failed login attempts caused by incorrect passwords.
-   
-  7. Generated failed authentication attempts by using a invalid username with an incorrect password.
+      <img src="Images/dashboard-splunk.png" width="700">
+               
+   9. Checked service status of Splunk Enterprise using:
       ```bash
-      ssh hacker@192.168.100.70
-      ssh justtry@192.168.100.70
-      ssh test123@192.168.100.70 
+      sudo /opt/splunk/bin/splunk status
       ```
-      <img src = "Images/failed-login-wrong-username-and-wrong-pass-3-times.png" width="700">
+      <img src="Images/splunk-status-after-login.png" width="700">
 
-    After entering an incorrect password multiple times, Ubuntu Server rejected the authentication request and returned:
+  This confirmed that Splunk Enterprise was running successfully and operational..
 
-    Permission denied (publickey,password)
-  
-  8. monitored live SSH authentication logs on Ubuntu Server using:
-      ```bash
-      sudo journalctl -u ssh -f 
-      ```
-      <img src="Images/journalctl-monitoring-log-login-failed-2.png" width="700">
-      
-    This allowed live observation of SSH authentication activity generated from the client machine.
-         
-  9. Attempted Authentication using a valid username and password after multiple failed login attempts:
-      ```bash
-      ssh dominique@192.168.100.70
-      ```
-      <img src="Images/client-machine-got-ban-by-fail2ban.png" width="700">
+### Result:
+Splunk Enterprise was successfully installed on the Ubuntu Server virtual machine.
 
-   Ubuntu Server rejected the connection request and returned:
-  
-    `ssh: connect to host 192.168.100.70 port 22: Connection refused`
-  
-  This indicated that the client machine had likely been banned by Fail2Ban after exceeding the failed authentication threshold.
-            
-  10. Verified the Fail2Ban status on Ubuntu Server using:
-     ```bash
-     sudo fail2ban-client status sshd
-     ```     
-    <img src="Images/check-status-fail2ban-ssh-client" width="700">
-    
-   The output confirmed that the Kali Linux IP address had been added to the banned IP list.
+The Splunk service started successfully, the web interface was accessible through port 8000, and service status verification confirmed that Splunk was running correctly.
 
-  11. Removed the Kali Linux IP address from the Fail2Ban list using:
-     ```bash
-     sudo fail2ban-client unbanip 192.168.100.67
-     sudo fail2ban-client status sshd
-     ``` 
-    <img src="Images/check-status-fail2ban-ssh-client.png" width="700">
-   
-  12. Attempted authentication again using a valid username and password:
-      ```bash
-      ssh dominique@192.168.100.70
-      ```
-      <img src="Images/after-unbanip-fail2ban-client-sshd.png" width="700">
-      The Kali Linux client machine successfully established an SSH connection to Ubuntu Server after the IP address was unbanned.
-      
+This environment is now ready for log ingestion, authentication monitoring, and security investigation activities in future projects.
 
 ---
 
 ## 📊 4. Practical Execution & Findings
 
 * **Activity Executed:**
-  - generated failed SSH login attempts using a valid username with incorrect passwords.
-  - generated failed SSH login attempts using an invalid usernames with incorrect passwords.
-  - Monitored live SSH authentication activity generated from the client machine using:
-    `sudo journalctl -u ssh -f`
-  - compared log entries generated by valid-user authentication failures and invalid-user authentication failures
-  - triggered Fail2Ban protection through repeated failed login attempts
-  - verified the banned IP address using `sudo fail2ban-client status sshd`
-  - removed the banned IP address on the Fail2Ban IP banned list using `sudo fail2ban-client unbanip client_ip_address`
-  - confirmed successful SSH authentication after the IP address removed from fail2Ban ban list.
+  - Installed Splunk Enterprise on Ubuntu Server
+  - Verified service startup and operation
+  - Accessed the Splunk Web Interface
+  - Confirmed successful deployment through service status checks
 * **Key Observations:**
-  - Ubuntu Server recorded all failed SSH authentication attempts in the system logs with `journalctl`
-  - failed login attempts using a valid username generated "Failed password" entries
-  - Failed login attempts using invalid usernames generated authentication failure events associated with unknown users.
-  - Repeated authentication failures triggered Fail2Ban protection mechanisms.
-  - Fail2Ban automatically added the Kali Linux client IP address to the banned IP list after multiple failed authentication attempts.
-  - Once the IP address was banned, SSH connectivity to Ubuntu Server was no longer possible from the client machine.
-  - The Fail2Ban status output provided visibility into active bans and offending IP addresses.
-  - Removing the banned IP address immediately restored SSH connectivity.
-  - Authentication logs provided valuable information for identifying suspicious login activity and potential brute-force attacks.
-  - Combining authentication log monitoring with Fail2Ban created a basic host-based detection and response capability.
+  - Splunk Enterprise was installed successfully using the Linux terminal.
+  - The Splunk Web Interface became accessible on port 8000.
+  - Service status verification confirmed that Splunk was operational.
+  - The environment was successfully prepared for future log ingestion and monitoring activities.
 ---
 
 ## 🚀 5. Key Takeaways & Career Alignment
 * **Conclusion:**
- This lab demonstrated how failed SSH authentication attempts are recorded, monitored, and investigated on Ubuntu Server. By generating both invalid username and incorrect password scenarios, the project provided practical experience analyzing authentication logs and understanding how Fail2Ban automatically responds to suspicious login activity. The investigation also highlighted the importance of log monitoring for identifying potential brute-force attacks and unauthorized access attempts.
-* **L1 SOC Skill Demonstrated:**
-  - Authentication log analysis
-  - SSH security monitoring
-  - Failed login investigation
-  - Log correlation and event analysis
-  - Host-based intrusion prevention using Fail2Ban
-  - Linux service administration
-  - Incident validation and troubleshooting
-  - Security event monitoring
-  - Basic threat detection concepts
-* **Next Steps:**
-  - Forward authentication logs into Splunk for centralized monitoring
-  - Create dashboard for failed login activity
-  - Build alerts for excessive authentication failures
-  - Investigate brute-force attack patterns using centralized logging
-  - Expand monitoring to additional Linux services
-## 🛠 Skills Practiced
- - SSH authentication analysis
- - Authentication log monitoring
- - Linux log investigation
- - Fail2Ban administration
- - IP ban verification and remediation
- - Security event analysis
- - Linux command-line operations
- - Incident troubleshooting
- - Technical documentation and reporting
+Successfully deployed and configured Splunk Enterprise on an Ubuntu Server virtual machine. Through this lab, I gained hands-on experience with Linux administration, SIEM deployment, service verification, and troubleshooting.
 
+This environment will be used as the foundation for future projects involving log ingestion, authentication monitoring, security investigations, detection engineering, and SOC analyst workflows.
+
+* **L1 SOC Skill Demonstrated:**
+  - Linux administration
+  - Software installation and configuration
+  - Service management
+  - Basic SIEM deployment
+  - Troubleshooting and problem resolution
+    
+* **Next Steps:**
+  - Ingest Linux authentication logs (auth.log)
+  - Ingest system logs (syslog)
+  - Perform SSH authentication monitoring
+  - Create Splunk alerts and dashboards
+  - Conduct basic security investigations
+    
+## 🛠 Skills Practiced
+ - Linux
+ - VirtualBox
+ - Splunk Enterprise
+ - Package Management
+ - System Administration
+ - Troubleshooting
+ - SIEM Fundamentals
