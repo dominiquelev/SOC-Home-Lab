@@ -45,20 +45,35 @@ During AWS account registration,the payment verification transaction was decline
 
 After the AWS account was successfully created and verified, the following steps were performed to configure AWS IAM and implement Role-Based Access Control (RBAC).
   1.  Signed in to the AWS Management Console as the Root User
-     
+
+      <img src="Images/sign-in-as-root.png" width="700">
+      
   2. Enable Multi-Factor Authentication for the root account
      
-       <img src="Images/hostnamectl.png" width="700">
+      <img src="Images/set-up-MFA-root-enable.png" width="700">
 
-   3. Opened the AWS Management Console and navigated to the IAM Dashboard
+  3. Opened the AWS Management Console and navigated to the IAM Dashboard
+
+      <img src="Images/dashboard-IAM-AWS.png" width="700">
   
-   4. Created Administrators IAM group and attached the following AWS managed policy : 
+  4. Created Administrators IAM group and attached the following AWS managed policy : 
     - `AdministratorAccess`
-   5. Created an IAM administrator user (Admin) with console access and added the user to the Administrators group
-   6. signed out of the root account and signed in using the Admin IAM user. 
-   7. Enabled Multi-Factor Authentication (MFA) for the Admin user
-   8. Opened the IAM dashboard using the Admin account
-   9. Created IAM groups for each department and attached the appropriate AWS managed policies:
+      <img src="Images/Administrators-group.png" width="700">
+      <img src="Images/AdministratorsAccess-policy.png" width="700">
+
+  5. Created an IAM administrator user (Admin) with console access and added the user to the Administrators group
+      <img src="Images/create_admin_user.png" width="700">
+ 
+  6. signed out of the root account and signed in using the Admin IAM user. 
+     <img src="Images/login-console-admin.png" width="700">
+  
+  7. Enabled Multi-Factor Authentication (MFA) for the Admin user
+     <img src="Images/set-up-admin.png" width="700">
+     <img src="Images/set-up-admin-enable.png" width="700">
+  
+  8. Opened the IAM dashboard using the Admin account
+     <img src="Images/dashboard-IAM-Admin.png" width="700">
+   11. Created IAM groups for each department and attached the appropriate AWS managed policies:
        | IAM Group | Attached Policy | Purpose |
        | :--- | :--- | :--- | :--- | 
        | Administrators | `AdministratorAccess` | Full administrative access to AWS resources |
@@ -66,7 +81,7 @@ After the AWS account was successfully created and verified, the following steps
        | Finance_Group | `AmazonS3ReadOnly` | Read-only access to Amazon S3 |
        | IT_Group | `AmazonEC2FullAccess` | Full access to Amazon EC2 |
          
-   10. Create IAM users of each department and put users to the appropriate IAM group:
+   12. Create IAM users of each department and put users to the appropriate IAM group:
        | User | Group | Policy | Directly Attached Policies |
        | :--- | :--- | :--- | :--- |
        | Admin | Administrators | AdministratorAccess | IAMUserChangePassword|
@@ -75,8 +90,8 @@ After the AWS account was successfully created and verified, the following steps
        | Conan_Finance| Finance_Group| AmazonS3ReadOnlyAccess | IAMUserChangePassword|
       **Note:** Department-specific permissions were assigned through IAM   groups to follow Role-Based Access Control (RBAC). The `IAMUserChangePassword` policy was attached directly to each IAM user to allow users to change their own passwords after their initial login.
          
-11. Enable Require password reset at next sign-in when creating each IAM user and attached the IAMUserChangePassword policy to allow users to change their own passwords.
-12. Validated permissions by signing in as each IAM user and testing access to AWS services to verify the implementation of the Principle of Least Privilege (PoLP)
+13. Enable Require password reset at next sign-in when creating each IAM user and attached the IAMUserChangePassword policy to allow users to change their own passwords.
+14. Validated permissions by signing in as each IAM user and testing access to AWS services to verify the implementation of the Principle of Least Privilege (PoLP)
 
 Permission Validation - Alice_HR
 
