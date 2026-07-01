@@ -4,11 +4,10 @@
 The objective of this lab was to gain hands-on experience with AWS Identity and Access Management (IAM) by implementing Role-Based Access Control (RBAC) and the Principle of Least Privilege (PoLP). 
 The lab simulates a small organization's AWS environment by creating multiple departments, assigning only the permissions required for each role, and validating access controls through permission testing using different IAM users.
 
-
 The lab focused on the following objectives :
-- Create an AWS account
-- Create IAM groups and attach AWS managed policies
-- Create IAM users
+- Creating an AWS account
+- Creating IAM groups and attach AWS managed policies
+- Creating IAM users
 - Assigning IAM users to groups
 - Enabling Multi-Factor Authentication (MFA) for privileged accounts
 - Verifying permissions by logging in each IAM user
@@ -48,7 +47,7 @@ After the AWS account was successfully created and verified, the following steps
 
       <img src="Images/sign-in-as-root.png" width="700">
       
-  2. Enable Multi-Factor Authentication for the root account
+  2. Enable Multi-Factor Authentication (MFA) for the root account
      
       <img src="Images/set-up-MFA-root-enable.png" width="700">
 
@@ -63,37 +62,48 @@ After the AWS account was successfully created and verified, the following steps
       <img src="Images/Administrators-group.png" width="700">
       <img src="Images/AdministratorsAccess-policy.png" width="700">
 
-  6. Created an IAM administrator user (Admin) with console access and added the user to the Administrators group
+  5. Created an IAM administrator user (Admin) with console access and added the user to the Administrators group
       <img src="Images/create_admin_user.png" width="700">
  
-  7. signed out of the root account and signed in using the Admin IAM user. 
-     <img src="Images/login-console-admin.png" width="700">
+  6. Signed out of the root account and signed in using the Admin IAM user. 
+      <img src="Images/login-console-admin.png" width="700">
   
-  8. Enabled Multi-Factor Authentication (MFA) for the Admin user
-     <img src="Images/set-up-admin.png" width="700">
-     <img src="Images/set-up-admin-enable.png" width="700">
+  7. Enabled Multi-Factor Authentication (MFA) for the Admin user
+      <img src="Images/set-up-MFA-admin.png" width="700">
+      <img src="Images/set-up-MFA-admin-enable.png" width="700">
   
-  9. Opened the IAM dashboard using the Admin account
-     <img src="Images/dashboard-IAM-Admin.png" width="700">
-   11. Created IAM groups for each department and attached the appropriate AWS managed policies:
-       | IAM Group | Attached Policy | Purpose |
-       | :--- | :--- | :--- | :--- | 
-       | Administrators <img src="Images/Administrators-group.png" width="700"> | `AdministratorAccess` | Full administrative access to AWS resources |
-       | HR_Group <img src="Images/HR_Group-create.png" width="700">  | `AmazonS3ReadOnly` | Read-only access to Amazon S3 |
-       | Finance_Group  <img src="Images/Finance_group-create.png" width="700"> | `AmazonS3ReadOnly` | Read-only access to Amazon S3 |
-       | IT_Group | `AmazonEC2FullAccess` | Full access to Amazon EC2 |
-         
-   13. Create IAM users of each department and put users to the appropriate IAM group:
-       | User | Group | Policy | Directly Attached Policies |
+  8. Opened the IAM dashboard using the Admin account
+      <img src="Images/dashboard-IAM-Admin.png" width="700">
+  9. Created IAM groups for each department and attached the appropriate AWS managed policies.
+      
+      **Screenshot - IAM Groups**
+      <img src="Images/IAM_Groups" width="700">
+      
+      The following AWS managed policies were attached to each IAM group:
+        | IAM Group | Attached Policy | Purpose |
+        | :--- | :--- | :--- |
+        | Administrators | `AdministratorAccess` | Full administrative access to AWS resources |
+        | HR_Group | `AmazonS3ReadOnlyAccess` | Read-only access to Amazon S3 |
+        | Finance_Group | `AmazonS3ReadOnlyAccess` | Read-only access to Amazon S3 |
+        | IT_Group | `AmazonEC2FullAccess` | Full access to Amazon EC2 |
+   
+    
+  10. Created IAM users for each department and assigned each user to the appropriate IAM group.
+    
+      **Screenshot - IAM User**
+      <img src="Images/IAM_Users" width="700">
+    
+      | IAM User | IAM Group | Group Policy | Directly Attached Policy |
        | :--- | :--- | :--- | :--- |
-       | Admin | Administrators | AdministratorAccess | IAMUserChangePassword|
+       | Admin@IAM | Administrators | AdministratorAccess | IAMUserChangePassword|
        | Alice_HR | HR_Group | AmazonS3ReadOnlyAccess | IAMUserChangePassword|
        | Bobby_IT | IT_Group | AmazonEC2FullAccess | IAMUserChangePassword|
        | Conan_Finance| Finance_Group| AmazonS3ReadOnlyAccess | IAMUserChangePassword|
-      **Note:** Department-specific permissions were assigned through IAM   groups to follow Role-Based Access Control (RBAC). The `IAMUserChangePassword` policy was attached directly to each IAM user to allow users to change their own passwords after their initial login.
-         
-14. Enable Require password reset at next sign-in when creating each IAM user and attached the IAMUserChangePassword policy to allow users to change their own passwords.
-15. Validated permissions by signing in as each IAM user and testing access to AWS services to verify the implementation of the Principle of Least Privilege (PoLP)
+
+       **Note:** Department-specific permissions were assigned through IAM   groups to follow Role-Based Access Control (RBAC). The `IAMUserChangePassword` policy was attached directly to each IAM user to allow users to change their own passwords after their initial login.
+              
+11. Enable the **Require password reset at next sign-in** option when creating each IAM user and attached the `IAMUserChangePassword` policy to allow users to change their own passwords.
+12. Validated permissions by signing in as each IAM user and testing access to AWS services to verify the implementation of the Principle of Least Privilege (PoLP)
 
 Permission Validation - Alice_HR
 
@@ -103,23 +113,33 @@ Assigned Permissions
 - Directly Attached Policy: `IAMUserChangePassword`
 
 Validation Tests
-1. AWS IAM
+1. First sign-in
+- Attempted to sign-in as the `Alice_HR` IAM user. 
+- The user was prompted to reset the password before accessing the AWS management Console.
+- Result: Password reset required
+- Reason: The **Require password reset at next sign-in** option was enabled when the IAM user was created.
+  <img src="Images/user-HR_required_pass_reset_enable.png" width="700">
+  
+2. AWS IAM
 - Attempted to access the IAM Dashboard.
 - Result: Access denied.
 - Reason: The user was not granted IAM administrative permissions. The only IAM permission available is the ability to change their own password the `IAMUserChangePassword`.
-
-2. Amazon S3
+  <img src="Images/user_HR-dashboard-IAM-access-denied.png" width="700">
+  
+3. Amazon S3
 - Attempted to access the Amazon S3 console and view the General Purpose Buckets page.
 - **Result:** Access granted. The S3 console loaded successfully, although no buckets were available in the AWS account
 - **Reason:** The `AmazonS3ReadOnlyAccess` policy allows read-only access to Amazon S3 resources.
-
-3. Amazon EC2
+  <img src="Images/user_HR-enable-access-s3-bucket-list.png" width="700">
+ 
+4. Amazon EC2
 - Attempted to access the EC2 Instances page.
 - **Result:** Access denied (`ec2:DescribeInstances`).
 - **Reason:** The HR group was not granted any Amazon EC2 permissions.
+  <img src="Images/user_HR-EC2-instance-access-denied.png" width="700">
 
 Conclusion
--The HR user successfully accessed Amazon S3, while access to IAM and EC2 was denied, confirming that the HR role follows the **Principle of Least Privilege (PoLP)**.
+-The HR user was required to reset the password during the first sign-in and successfully accessed Amazon S3, while access to AWS IAM and Amazon EC2 was denied, confirming that the HR role follows the **Principle of Least Privilege (PoLP)**.
 
 Permission Validation - Bobby_IT
 Assigned Permissions
@@ -128,23 +148,33 @@ Assigned Permissions
 - Directly Attached Policy: `IAMUserChangePassword`
 
 Validation Tests
-1. AWS IAM
+1. First sign-in
+- Attempted to sign-in as the `Bobby_IT` IAM user. 
+- The user was prompted to reset the password before accessing the AWS management Console.
+- Result: Password reset required
+- Reason: The **Require password reset at next sign-in** option was enabled when the IAM user was created.
+  <img src="Images/user-IT_required_pass_reset_enable.png" width="700">
+
+2. AWS IAM
 - Attempted to access the IAM Dashboard.
 - Result: Access denied.
-- Reason: The user was not granted IAM administrative permissions. the only IAM permission available is the ability to change their own password the `IAMUserChangePassword`.
+- Reason: The user was not granted IAM administrative permissions. The only IAM permission available is the ability to change their own password the `IAMUserChangePassword`.
+  <img src="Images/user_IT-dashboard-IAM-access-denied.png" width="700">
 
-2. Amazon S3
+3. Amazon S3
 - Attempted to access the Amazon S3 console and view the General Purpose Buckets page.
 - **Result:** Access denied.
 - **Reason:** The IT Group was not granted any Amazon S3 permissions
+  <img src="Images/user_IT-denied-access-s3.png" width="700">
 
-3. Amazon EC2
+4. Amazon EC2
 - Attempted to access the EC2 Instances page.
 - **Result:** Access granted 
 - **Reason:** The `AmazonEC2FullAccess` policy allows full access to Amazon EC2 resources
-
+  <img src="Images/user_IT-EC2-instance-access-enable.png" width="700">
+  
 Conclusion
-- The IT user successfully accessed Amazon EC2 while access to IAM and Amazon S3 remained restricted, validating the assigned role permissions.
+- The IT user was required to reset the password during the first sign-in and successfully accessed Amazon EC2 while access to IAM and Amazon S3 remained restricted, validating the assigned role permissions.
 
 Permission Validation - Conan_Finance
 
@@ -154,23 +184,33 @@ Assigned Permissions
 - Directly Attached Policy: `IAMUserChangePassword`
 
 Validation Tests
-1. AWS IAM
+1. First sign-in
+- Attempted to sign-in as the `Conan_Finance` IAM user. 
+- The user was prompted to reset the password before accessing the AWS management Console.
+- Result: Password reset required
+- Reason: The **Require password reset at next sign-in** option was enabled when the IAM user was created.
+  <img src="Images/user-Finance_required_pass_reset_enable.png" width="700">
+  
+2. AWS IAM
 - Attempted to access the IAM Dashboard.
 - Result: Access denied.
-- Reason: The user was not granted IAM administrative permissions. the only IAM permission available is the ability to change their own password the `IAMUserChangePassword`.
+- Reason: The user was not granted IAM administrative permissions. The only IAM permission available is the ability to change their own password the `IAMUserChangePassword`.
+  <img src="Images/user_Finance-dashboard-IAM-access-denied.png" width="700">
 
-2. Amazon S3
+3. Amazon S3
 - Attempted to access the Amazon S3 console and view the General Purpose Buckets page.
 - **Result:** Access granted. The S3 console loaded successfully, although no buckets were available in the AWS account
 - **Reason:** The `AmazonS3ReadOnlyAccess` policy allows read-only access to Amazon S3 resources.
+  <img src="Images/user_Finance-enable-access-s3.png" width="700">
 
-3. Amazon EC2
+4. Amazon EC2
 - Attempted to access the EC2 Instances page.
 - **Result:** Access denied (`ec2:DescribeInstances`).
 - **Reason:** The Finance group was not granted any Amazon EC2 permissions.
-
+  <img src="Images/user_Finance-EC2-instance-access-denied.png" width="700">
+  
 Conclusion:
-- The Finance user successfully accessed Amazon S3 while access to IAM and Amazon EC2 was denied, demonstrating the intended permission boundaries.
+- The Finance user was required to reset the password during the first sign-in and successfully accessed Amazon S3 while access to IAM and Amazon EC2 was denied, demonstrating the intended permission boundaries.
 
 **Overall Permission Validation Summary**
 - Permission validation was successfully completed for all IAM users. Each user was granted access only to the AWS services required for their assigned role while unauthorized access attempts were denied. These results confirm the successful implementation of Role-Based Access Control (RBAC) and the Principle of Least Privilege (PoLP) using AWS Identity and Access Management (IAM).
@@ -178,7 +218,7 @@ Conclusion:
 | IAM User | IAM | Amazon S3 | Amazon EC2 | Status|
 | :--- | :--- | :--- | :--- |  :--- |
 |Admin |✅|✅|✅| ✅Pass |
-|Alice_HR |❌|✅ Ready-only|❌| ✅Pass |
+|Alice_HR |❌|✅ Read-only|❌| ✅Pass |
 |Bobby_IT|❌|❌|✅ Full Access| ✅Pass |
 |Conan_Finance|❌|✅ Read-only|❌ | ✅Pass |
 ---
