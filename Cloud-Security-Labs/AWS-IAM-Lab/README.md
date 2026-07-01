@@ -57,31 +57,33 @@ After the AWS account was successfully created and verified, the following steps
       <img src="Images/dashboard-IAM-AWS.png" width="700">
   
   4. Created Administrators IAM group and attached the following AWS managed policy : 
-    - `AdministratorAccess`
+     ```
+     AdministratorAccess
+     ```
       <img src="Images/Administrators-group.png" width="700">
       <img src="Images/AdministratorsAccess-policy.png" width="700">
 
-  5. Created an IAM administrator user (Admin) with console access and added the user to the Administrators group
+  6. Created an IAM administrator user (Admin) with console access and added the user to the Administrators group
       <img src="Images/create_admin_user.png" width="700">
  
-  6. signed out of the root account and signed in using the Admin IAM user. 
+  7. signed out of the root account and signed in using the Admin IAM user. 
      <img src="Images/login-console-admin.png" width="700">
   
-  7. Enabled Multi-Factor Authentication (MFA) for the Admin user
+  8. Enabled Multi-Factor Authentication (MFA) for the Admin user
      <img src="Images/set-up-admin.png" width="700">
      <img src="Images/set-up-admin-enable.png" width="700">
   
-  8. Opened the IAM dashboard using the Admin account
+  9. Opened the IAM dashboard using the Admin account
      <img src="Images/dashboard-IAM-Admin.png" width="700">
    11. Created IAM groups for each department and attached the appropriate AWS managed policies:
        | IAM Group | Attached Policy | Purpose |
        | :--- | :--- | :--- | :--- | 
-       | Administrators | `AdministratorAccess` | Full administrative access to AWS resources |
-       | HR_Group | `AmazonS3ReadOnly` | Read-only access to Amazon S3 |
-       | Finance_Group | `AmazonS3ReadOnly` | Read-only access to Amazon S3 |
+       | Administrators <img src="Images/Administrators-group.png" width="700"> | `AdministratorAccess` | Full administrative access to AWS resources |
+       | HR_Group <img src="Images/HR_Group-create.png" width="700">  | `AmazonS3ReadOnly` | Read-only access to Amazon S3 |
+       | Finance_Group  <img src="Images/Finance_group-create.png" width="700"> | `AmazonS3ReadOnly` | Read-only access to Amazon S3 |
        | IT_Group | `AmazonEC2FullAccess` | Full access to Amazon EC2 |
          
-   12. Create IAM users of each department and put users to the appropriate IAM group:
+   13. Create IAM users of each department and put users to the appropriate IAM group:
        | User | Group | Policy | Directly Attached Policies |
        | :--- | :--- | :--- | :--- |
        | Admin | Administrators | AdministratorAccess | IAMUserChangePassword|
@@ -90,8 +92,8 @@ After the AWS account was successfully created and verified, the following steps
        | Conan_Finance| Finance_Group| AmazonS3ReadOnlyAccess | IAMUserChangePassword|
       **Note:** Department-specific permissions were assigned through IAM   groups to follow Role-Based Access Control (RBAC). The `IAMUserChangePassword` policy was attached directly to each IAM user to allow users to change their own passwords after their initial login.
          
-13. Enable Require password reset at next sign-in when creating each IAM user and attached the IAMUserChangePassword policy to allow users to change their own passwords.
-14. Validated permissions by signing in as each IAM user and testing access to AWS services to verify the implementation of the Principle of Least Privilege (PoLP)
+14. Enable Require password reset at next sign-in when creating each IAM user and attached the IAMUserChangePassword policy to allow users to change their own passwords.
+15. Validated permissions by signing in as each IAM user and testing access to AWS services to verify the implementation of the Principle of Least Privilege (PoLP)
 
 Permission Validation - Alice_HR
 
