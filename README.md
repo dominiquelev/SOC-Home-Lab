@@ -2,22 +2,23 @@
 
 ## Aspiring Junior Cloud Security & SOC Analyst
 
-I am currently building hands-on cybersecurity and cloud security skills through practical labs, network traffic analysis, log investigation, and security-focused projects using Kali Linux, Wireshark, Splunk, and AWS.
+I am building hands-on experience in cloud security and cybersecurity through practical labs, AWS security projects, network traffic analysis, Linux administration, and security monitoring using Splunk.
 
-My learning approach focuses on practical investigation workflows, troubleshooting, traffic visibility, and real-world security concepts instead of theory-only learning.
+My portfolio focuses on Identity and Access Management (IAM), Role-Based Access Control (RBAC), Principle of Least Privilege (PoLP), network protocol analysis, and log investigation to develop practical skills for Cloud Security and Security Operations Center (SOC) roles.
 
 ---
 
 # 🔍 Current Focus
 
-* Network Traffic Analysis
-* HTTP / HTTPS & TLS Inspection
-* DNS & ICMP Traffic Investigation
+* AWS Cloud Security (IAM, CloudTrail)
 * Linux Security Fundamentals
 * Splunk Log Analysis & Monitoring
-* AWS Cloud Security Fundamentals
+* Network Traffic Analysis
+* HTTP / HTTPS & TLS Inspection
+* DNS & ICMP Investigation
+* Role-Based Access Control (RBAC)
+* Principle of Least Privilege (PoLP)
 * Beginner SOC Investigation Workflows
-* Threat Modeling & Security Awareness
 
 ---
 
@@ -40,12 +41,15 @@ My learning approach focuses on practical investigation workflows, troubleshooti
 * VirtualBox
 * Linux CLI
 
-## Cloud & Security (Currently Learning)
+## Cloud Security 
 
-* AWS IAM
-* AWS CloudTrail
-* Authentication Log Analysis
-* Linux Hardening Basics
+* AWS Identity and Access Management (IAM)
+* AWS Management Console
+* Multi-Factor Authentication (MFA)
+* Role-Based Access Control (RBAC)
+* Principle of Least Privilege (PoLP)
+* AWS CloudTrail *(Currently Learning)*
+* Authentication Log Analysis *(Currently Learning)*
 
 ## Version Control & Documentation
 
@@ -57,19 +61,27 @@ My learning approach focuses on practical investigation workflows, troubleshooti
 
 # 📂 Featured Projects
 
-## 📌 Wireshark HTTP vs HTTPS Traffic Analysis
+## ☁️ AWS IAM Security Lab
+
+Implemented Role-Based Access Control (RBAC) using AWS Identity and Access Management (IAM), configured Multi-Factor Authentication (MFA), assigned AWS managed policies to IAM groups, and validated the Principle of Least Privilege (PoLP) by testing permissions across multiple IAM users.
+
+## 🖥️ Splunk SOC Home Lab
+
+Built a beginner SOC environment using Splunk Enterprise to ingest Linux authentication logs, investigate system events, and perform basic security monitoring.
+
+## 🌐 Wireshark HTTP vs HTTPS Traffic Analysis
 
 Analyzed the differences between unencrypted HTTP and encrypted HTTPS traffic using Wireshark packet inspection and TLS handshake analysis.
 
-## 📌 Wireshark DNS Traffic Analysis
+## 🌐 Wireshark DNS Traffic Analysis
 
 Captured and analyzed DNS query and response traffic to understand domain resolution behavior and network communication flow.
 
-## 📌 Wireshark ICMP Analysis
+## 🌐 Wireshark ICMP Analysis
 
 Observed ICMP echo request and reply packets to study connectivity troubleshooting and packet behavior.
 
-## 📌 Wireshark TCP 3-Way Handshake
+## 🌐 Wireshark TCP 3-Way Handshake
 
 Captured SYN, SYN-ACK, and ACK packets to analyze TCP connection establishment and communication flow.
 
@@ -98,38 +110,36 @@ The complete documentation remains private due to security and operational sensi
 
 # 🎯 Career Goal
 
-Currently focused on developing practical experience toward becoming:
+Seeking an entry-level opportunity as:
 
 * Junior Cloud Security Analyst
-* Cloud SOC Analyst
+* Cloud Support Associate
 * SOC Analyst (L1)
 * Junior Security Analyst
 
-with long-term interest in cloud security engineering and security monitoring.
+Long-term goal:
 
+Cloud Security Engineer
 ---
 
 # 📚 Currently Learning
 
-* Linux Hardening
-* Authentication Log Investigation
-* Splunk Monitoring & Detection
-* AWS IAM Security
 * AWS CloudTrail Logging
+* Linux Hardening
+* Splunk Monitoring & Detection
+* Detection Engineering Fundamentals
 * Security Monitoring Concepts
-* Beginner Detection Engineering
+* AWS Identity-Based Policies
 
 ---
 
 # 📈 Learning Philosophy
 
-I learn best through hands-on projects, investigation workflows, traffic analysis, troubleshooting, and practical security simulations instead of passive theory-only learning.
-
-Most projects in this repository are designed to simulate beginner-level SOC and cloud security workflows.
+I enjoy learning through hands-on projects, security investigations, troubleshooting, and documenting real-world scenarios. Each repository demonstrates a practical security concept while recording the implementation process, findings, and lessons learned.
 
 ---
 
 # 📫 Connect With Me
 
-* GitHub: dominiquelev
-* LinkedIn: [www.linkedin.com/in/dominique-liza-e/](http://www.linkedin.com/in/dominique-liza-e/)
+* GitHub: [@dominiquelev](https://github.com/dominiquelev)
+* LinkedIn: [Dominique Liza](https://www.linkedin.com/in/dominique-liza-e/)
