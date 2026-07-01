@@ -77,7 +77,7 @@ After the AWS account was successfully created and verified, the following steps
   9. Created IAM groups for each department and attached the appropriate AWS managed policies.
       
       **Screenshot - IAM Groups**
-      <img src="Images/IAM_Groups" width="700">
+      <img src="Images/IAM_Groups.png" width="700">
       
       The following AWS managed policies were attached to each IAM group:
         | IAM Group | Attached Policy | Purpose |
@@ -91,7 +91,7 @@ After the AWS account was successfully created and verified, the following steps
   10. Created IAM users for each department and assigned each user to the appropriate IAM group.
     
       **Screenshot - IAM User**
-      <img src="Images/IAM_Users" width="700">
+      <img src="Images/IAM_Users.png" width="700">
     
       | IAM User | IAM Group | Group Policy | Directly Attached Policy |
        | :--- | :--- | :--- | :--- |
