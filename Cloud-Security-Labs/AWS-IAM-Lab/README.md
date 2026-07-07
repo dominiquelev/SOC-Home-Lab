@@ -25,6 +25,7 @@ The lab focused on the following objectives :
   - AWS Identity and Access Management (IAM)
   - Amazon EC2 (Permission Validation)
   - Amazon S3 (Permission Validation)
+  - Billing and Cost Management (Permission Validation)
 * **Security Concepts Implemented:**
   - Multi-factor Authentication (MFA)
   - Role-Based Access Control (RBAC)
@@ -84,7 +85,7 @@ After the AWS account was successfully created and verified, the following steps
         | :--- | :--- | :--- |
         | Administrators | `AdministratorAccess` | Full administrative access to AWS resources |
         | HR_Group | `AmazonS3ReadOnlyAccess` | Read-only access to Amazon S3 |
-        | Finance_Group | `AmazonS3ReadOnlyAccess` | Read-only access to Amazon S3 |
+        | Finance_Group | `AWSBillingReadOnlyAccess` | Read-only access to Billing and Cost Management |
         | IT_Group | `AmazonEC2FullAccess` | Full access to Amazon EC2 |
    
     
@@ -98,7 +99,7 @@ After the AWS account was successfully created and verified, the following steps
        | Admin@IAM | Administrators | AdministratorAccess | IAMUserChangePassword|
        | Alice_HR | HR_Group | AmazonS3ReadOnlyAccess | IAMUserChangePassword|
        | Bobby_IT | IT_Group | AmazonEC2FullAccess | IAMUserChangePassword|
-       | Conan_Finance| Finance_Group| AmazonS3ReadOnlyAccess | IAMUserChangePassword|
+       | Conan_Finance| Finance_Group| AWSBillingReadOnlyAccess | IAMUserChangePassword|
 
        **Note:** Department-specific permissions were assigned through IAM   groups to follow Role-Based Access Control (RBAC). The `IAMUserChangePassword` policy was attached directly to each IAM user to allow users to change their own passwords after their initial login.
               
@@ -180,7 +181,7 @@ Permission Validation - Conan_Finance
 
 Assigned Permissions
 - Group: `Finance_Group`
-- Group Policy: `AmazonS3ReadOnlyAccess`
+- Group Policy: `AWSBillingReadOnlyAccess`
 - Directly Attached Policy: `IAMUserChangePassword`
 
 Validation Tests
@@ -199,28 +200,34 @@ Validation Tests
 
 3. Amazon S3
 - Attempted to access the Amazon S3 console and view the General Purpose Buckets page.
-- **Result:** Access granted. The S3 console loaded successfully, although no buckets were available in the AWS account
-- **Reason:** The `AmazonS3ReadOnlyAccess` policy allows read-only access to Amazon S3 resources.
-  <img src="Images/user_Finance-enable-access-s3.png" width="700">
+- **Result:** Access denied.
+- **Reason:** The Finance group was not granted any Amazon S3 permissions
+  <img src="Images/user_Finance-denied-access-s3.png" width="700">
 
 4. Amazon EC2
 - Attempted to access the EC2 Instances page.
 - **Result:** Access denied (`ec2:DescribeInstances`).
 - **Reason:** The Finance group was not granted any Amazon EC2 permissions.
   <img src="Images/user_Finance-EC2-instance-access-denied.png" width="700">
+
+5. Billing and Cost Management
+- Attempted to access the billing page.
+- **Result:** Access Granted.
+- **Reason:** The `AWSBillingReadOnlyAccess` policy allows read-only access to billing information, payment history, credits, and cost analysis without allowing billing modifications.
+  <img src="Images/user_Finance-enable-access-billing-and-cost-management.png" width="700">  
   
 Conclusion:
-- The Finance user was required to reset the password during the first sign-in and successfully accessed Amazon S3 while access to IAM and Amazon EC2 was denied, demonstrating the intended permission boundaries.
+- The Finance user was required to reset the password during the first sign-in and successfully accessed the AWS Billing and Cost Management console while access to AWS IAM,Billing and Cost Management, Amazon S3, and Amazon EC2 remained restricted. This demonstrates the implementation of the Principle of Least Privilege (PoLP) by granting Finance personnel access only to billing-related information.
 
 **Overall Permission Validation Summary**
 - Permission validation was successfully completed for all IAM users. Each user was granted access only to the AWS services required for their assigned role while unauthorized access attempts were denied. These results confirm the successful implementation of Role-Based Access Control (RBAC) and the Principle of Least Privilege (PoLP) using AWS Identity and Access Management (IAM).
 
-| IAM User | IAM | Amazon S3 | Amazon EC2 | Status|
-| :--- | :--- | :--- | :--- |  :--- |
-|Admin |✅|✅|✅| ✅Pass |
-|Alice_HR |❌|✅ Read-only|❌| ✅Pass |
-|Bobby_IT|❌|❌|✅ Full Access| ✅Pass |
-|Conan_Finance|❌|✅ Read-only|❌ | ✅Pass |
+| IAM User | IAM | Amazon S3 | Amazon EC2 | Billing & Cost Management | Status|
+| :--- | :--- | :--- | :--- |  :--- | :--- |
+|Admin |✅|✅|✅|❌| ✅Pass |
+|Alice_HR |❌|✅ Read-only|❌|❌| ✅Pass |
+|Bobby_IT|❌|❌|✅ Full Access|❌| ✅Pass |
+|Conan_Finance|❌|❌|❌| ✅ Read-only| ✅Pass |
 ---
 
 ## 📊 4. Practical Execution & Findings
@@ -233,7 +240,7 @@ Conclusion:
       + `AdministratorAccess` -> Administrators
       + `AmazonS3ReadOnlyAccess` -> HR Group 
       + `AmazonEC2FullAccess` -> IT group
-      + `AmazonS3ReadOnlyAccess` -> Finance Group 
+      + `AWSBillingReadOnlyAccess` -> Finance Group 
   - Created IAM users for each department
   - Attached the `IAMUserChangePassword` policy directly to each IAM user
   - Assigned each IAM user to the appropriate IAM group.
