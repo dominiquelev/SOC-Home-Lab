@@ -82,30 +82,50 @@ The following steps were performed to configure AWS CloudTrail for recording man
   5. Reviewed the configuration and successfully created the CloudTrail trail.
       <img src="Images/create_trail_success.png" width="700">
       
-  6. Opened the AWS Management Console and navigated to the IAM Dashboard
+  6. Created a new IAM user named **Intern_HR** and added the user to the **HR_Group** to generate IAM management events for CloudTrail analysis
 
-      <img src="Images/dashboard-IAM-AWS.png" width="700">
-  
-  7. Created Administrators IAM group and attached the following AWS managed policy : 
-     ```
-     AdministratorAccess
-     ```
-      <img src="Images/Administrators-group.png" width="700">
-      <img src="Images/AdministratorsAccess-policy.png" width="700">
+      <img src="Images/created_intern_HR.png" width="700">
+      <img src="Images/intern_HR_in_group.png" width="700">
+     
+  7. Verified the generated events in **AWS CloudTrail Event History**.
 
-  8. Created an IAM administrator user (Admin) with console access and added the user to the Administrators group
+     The following IAM management events were successfully recorded:
+     -`CreateUser` : Recorded when the `Intern_HR` IAM user was created.
+      <img src="Images/createUserEvent_admin_user.png" width="700">
+
+      The event details were available in the CloudTrail event record (JSON format).
+      <img src="Images/eventRecord_create_user_admin.png" width="700">
+      
+     - `AddUserToGroup` : Recorded when the `Intern_HR` user was added to the **HR_Group**.
+      <img src="Images/addUserToGroupDEvent_admin_user.png" width="700">
+      
+  8. Deleted the **Intern_HR** IAM user to generate addditional audit events.
+
+     <img src="Images/delete_intern_HR.png" width="700">
+     
+     Before deleting the user, AWS automatically removed the user from the associated IAM group       because an IAM user cannot be deleted while group memberships still exist.
+
+     The following events were recorded in **AWS CloudTrail Event History**:
+      - **RemoveUserFromGroup** – Recorded when the user was automatically removed from the   **HR_Group**.
+        <img src="Images/removeUserFromGroupEvent_admin_user.png" width="700">
+        
+     - **DeleteUser** – Recorded when the `Intern_HR` IAM user was successfully deleted.
+      <img src="Images/deleteUserEvent_admin_user.png" width="700">
+
+  9.
+  10. Created an IAM administrator user (Admin) with console access and added the user to the Administrators group
       <img src="Images/create_admin_user.png" width="700">
  
-  9. Signed out of the root account and signed in using the Admin IAM user. 
+  11. Signed out of the root account and signed in using the Admin IAM user. 
       <img src="Images/login-console-admin.png" width="700">
   
-  10. Enabled Multi-Factor Authentication (MFA) for the Admin user
+  12. Enabled Multi-Factor Authentication (MFA) for the Admin user
       <img src="Images/set-up-MFA-admin.png" width="700">
       <img src="Images/set-up-MFA-admin-enable.png" width="700">
   
-  11. Opened the IAM dashboard using the Admin account
+  13. Opened the IAM dashboard using the Admin account
       <img src="Images/dashboard-IAM-Admin.png" width="700">
-  12. Created IAM groups for each department and attached the appropriate AWS managed policies.
+  14. Created IAM groups for each department and attached the appropriate AWS managed policies.
       
       **Screenshot - IAM Groups**
       <img src="Images/IAM_Groups.png" width="700">
@@ -119,7 +139,7 @@ The following steps were performed to configure AWS CloudTrail for recording man
         | IT_Group | `AmazonEC2FullAccess` | Full access to Amazon EC2 |
    
     
-  13. Created IAM users for each department and assigned each user to the appropriate IAM group.
+  15. Created IAM users for each department and assigned each user to the appropriate IAM group.
     
       **Screenshot - IAM User**
       <img src="Images/IAM_Users.png" width="700">
@@ -133,8 +153,8 @@ The following steps were performed to configure AWS CloudTrail for recording man
 
        **Note:** Department-specific permissions were assigned through IAM   groups to follow Role-Based Access Control (RBAC). The `IAMUserChangePassword` policy was attached directly to each IAM user to allow users to change their own passwords after their initial login.
               
-14. Enable the **Require password reset at next sign-in** option when creating each IAM user and attached the `IAMUserChangePassword` policy to allow users to change their own passwords.
-15. Validated permissions by signing in as each IAM user and testing access to AWS services to verify the implementation of the Principle of Least Privilege (PoLP)
+16. Enable the **Require password reset at next sign-in** option when creating each IAM user and attached the `IAMUserChangePassword` policy to allow users to change their own passwords.
+17. Validated permissions by signing in as each IAM user and testing access to AWS services to verify the implementation of the Principle of Least Privilege (PoLP)
 
 Permission Validation - Alice_HR
 
