@@ -91,11 +91,7 @@ The following steps were performed to configure AWS CloudTrail for recording man
 
      The following IAM management events were successfully recorded:
      -`CreateUser` : Recorded when the `Intern_HR` IAM user was created.
-      <img src="Images/createUserEvent_admin_user.png" width="700">
-
-      The event details were available in the CloudTrail event record (JSON format).
-      <img src="Images/eventRecord_create_user_admin.png" width="700">
-      
+      <img src="Images/createUserEvent_admin_user.png" width="700">     
      - `AddUserToGroup` : Recorded when the `Intern_HR` user was added to the **HR_Group**.
       <img src="Images/addUserToGroupDEvent_admin_user.png" width="700">
       
@@ -103,7 +99,7 @@ The following steps were performed to configure AWS CloudTrail for recording man
 
      <img src="Images/delete_intern_HR.png" width="700">
      
-     Before deleting the user, AWS automatically removed the user from the associated IAM group       because an IAM user cannot be deleted while group memberships still exist.
+     Before deleting the user, AWS automatically removed the user from the associated IAM group because an IAM user cannot be deleted while group memberships still exist.
 
      The following events were recorded in **AWS CloudTrail Event History**:
       - **RemoveUserFromGroup** – Recorded when the user was automatically removed from the   **HR_Group**.
@@ -112,20 +108,39 @@ The following steps were performed to configure AWS CloudTrail for recording man
      - **DeleteUser** – Recorded when the `Intern_HR` IAM user was successfully deleted.
       <img src="Images/deleteUserEvent_admin_user.png" width="700">
 
-  9.
-  10. Created an IAM administrator user (Admin) with console access and added the user to the Administrators group
+  9. Generate IAM Activity for CloudTrail Analysis
+  to verify that AWS CloudTrail records IAM-related activities, several permisson validation test were performed using different IAM users. The activities generated CloudTrail management events that were later analysed in **Event History**.
+
+The following actions were performed:
+
+| IAM User | Action | Expected Result | Actual Result | CloudTrail Event |
+|---|---|---|---|---|
+|Alice_HR | Attemtped to access EC2 | Access Denied | ❌ Access Denied | DescribeInstanceTypes (Client.UnauthorizedOperation) |
+|Conan_Finance | Accessed Billing & Cost Management | Success | ✅ Success | ListBillingViews |
+|Bobby_IT | Start, Stop, Terminate EC2| Success | ✅ Success | RunInstances, StopInstances, TerminateInstances |
+
+### Validation 1 – Alice_HR Unauthorized Amazon EC2 Access
+
+The **Alice_HR** user attempted to access Amazon EC2. Access was denied because the assigned IAM permissions did not allow EC2 actions.
+**CloudTrail Event:** `DescribeInstanceTypes`
+<img src="Images/userHR_access_ec2.png" width="700">
+
+The corresponding CloudTrail event confirmed the unauthorized API call.
+<img src="Images/describeInstanceTypesEvent_unauthorizedOperation_hr_user.png" width="700">
+
+  11. Created an IAM administrator user (Admin) with console access and added the user to the Administrators group
       <img src="Images/create_admin_user.png" width="700">
  
-  11. Signed out of the root account and signed in using the Admin IAM user. 
+  12. Signed out of the root account and signed in using the Admin IAM user. 
       <img src="Images/login-console-admin.png" width="700">
   
-  12. Enabled Multi-Factor Authentication (MFA) for the Admin user
+  13. Enabled Multi-Factor Authentication (MFA) for the Admin user
       <img src="Images/set-up-MFA-admin.png" width="700">
       <img src="Images/set-up-MFA-admin-enable.png" width="700">
   
-  13. Opened the IAM dashboard using the Admin account
+  14. Opened the IAM dashboard using the Admin account
       <img src="Images/dashboard-IAM-Admin.png" width="700">
-  14. Created IAM groups for each department and attached the appropriate AWS managed policies.
+  15. Created IAM groups for each department and attached the appropriate AWS managed policies.
       
       **Screenshot - IAM Groups**
       <img src="Images/IAM_Groups.png" width="700">
@@ -139,7 +154,7 @@ The following steps were performed to configure AWS CloudTrail for recording man
         | IT_Group | `AmazonEC2FullAccess` | Full access to Amazon EC2 |
    
     
-  15. Created IAM users for each department and assigned each user to the appropriate IAM group.
+  16. Created IAM users for each department and assigned each user to the appropriate IAM group.
     
       **Screenshot - IAM User**
       <img src="Images/IAM_Users.png" width="700">
@@ -153,8 +168,8 @@ The following steps were performed to configure AWS CloudTrail for recording man
 
        **Note:** Department-specific permissions were assigned through IAM   groups to follow Role-Based Access Control (RBAC). The `IAMUserChangePassword` policy was attached directly to each IAM user to allow users to change their own passwords after their initial login.
               
-16. Enable the **Require password reset at next sign-in** option when creating each IAM user and attached the `IAMUserChangePassword` policy to allow users to change their own passwords.
-17. Validated permissions by signing in as each IAM user and testing access to AWS services to verify the implementation of the Principle of Least Privilege (PoLP)
+17. Enable the **Require password reset at next sign-in** option when creating each IAM user and attached the `IAMUserChangePassword` policy to allow users to change their own passwords.
+18. Validated permissions by signing in as each IAM user and testing access to AWS services to verify the implementation of the Principle of Least Privilege (PoLP)
 
 Permission Validation - Alice_HR
 
