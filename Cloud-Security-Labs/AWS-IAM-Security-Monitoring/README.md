@@ -93,7 +93,7 @@ The following steps were performed to configure AWS CloudTrail for recording man
      -`CreateUser` : Recorded when the `Intern_HR` IAM user was created.
       <img src="Images/createUserEvent_admin_user.png" width="700">     
      - `AddUserToGroup` : Recorded when the `Intern_HR` user was added to the **HR_Group**.
-      <img src="Images/addUserToGroupDEvent_admin_user.png" width="700">
+      <img src="Images/addUserToGroupEvent_admin_user.png" width="700">
       
   8. Deleted the **Intern_HR** IAM user to generate addditional audit events.
 
