@@ -109,249 +109,195 @@ The following steps were performed to configure AWS CloudTrail for recording man
       <img src="Images/deleteUserEvent_admin_user.png" width="700">
 
   9. Generate IAM Activity for CloudTrail Analysis
-  to verify that AWS CloudTrail records IAM-related activities, several permisson validation test were performed using different IAM users. The activities generated CloudTrail management events that were later analysed in **Event History**.
+  to verify that AWS CloudTrail records IAM-related activities, several permission validation tests were performed using different IAM users. These activities generated CloudTrail management events that were later analyzed in **Event History**.
 
 The following actions were performed:
 
 | IAM User | Action | Expected Result | Actual Result | CloudTrail Event |
-|---|---|---|---|---|
-|Alice_HR | Attemtped to access EC2 | Access Denied | ❌ Access Denied | DescribeInstanceTypes (Client.UnauthorizedOperation) |
-|Conan_Finance | Accessed Billing & Cost Management | Success | ✅ Success | ListBillingViews |
-|Bobby_IT | Start, Stop, Terminate EC2| Success | ✅ Success | RunInstances, StopInstances, TerminateInstances |
+|----------|--------|-----------------|---------------|------------------|
+| Alice_HR | Attempted to access Amazon EC2 | Access Denied | ❌ Access Denied | `DescribeInstanceTypes` (`Client.UnauthorizedOperation`) |
+| Conan_Finance | Accessed AWS Billing & Cost Management | Success | ✅ Success | `ListBillingViews` |
+| Bobby_IT | Started, stopped, and terminated an Amazon EC2 instance | Success | ✅ Success | `RunInstances`, `StopInstances`, `TerminateInstances` |
 
-### Validation 1 – Alice_HR Unauthorized Amazon EC2 Access
+* Signed in as **Alice_HR** and attempted to access Amazon EC2. 
+Access was denied because the IAM permissions assigned to the **HR_Group** did not allow EC2 actions.
+AWS CloudTrail successfully recorded the unauthorized API call, demonstrating that failed management actions are also captured for auditing.
+          <img src="Images/userHR_access_ec2.png" width="700">
+          <img src="Images/describeInstanceTypesEvent_unauthorizedOperation_hr_user.png" width="700">
+          
+* Signed in as **Conan_Finance** and accessed the AWS Billing & Cost Management console.
+The action was completed successfully because the required permissions were assigned to **Finance_Group**.
+AWS CloudTrail recorded the corresponding management for auditing purposes.
 
-The **Alice_HR** user attempted to access Amazon EC2. Access was denied because the assigned IAM permissions did not allow EC2 actions.
-**CloudTrail Event:** `DescribeInstanceTypes`
-<img src="Images/userHR_access_ec2.png" width="700">
+  <img src="Images/userFinance_access_billing.png" width="700">
+  
+  <img src="Images/listBillingEvent_finance_user.png" width="700">
 
-The corresponding CloudTrail event confirmed the unauthorized API call.
-<img src="Images/describeInstanceTypesEvent_unauthorizedOperation_hr_user.png" width="700">
+* Signed in as **Bobby_IT** and performed Amazon EC2 instance lifecycle operations to validate the permissions assigned to **IT_Group**.
 
-  11. Created an IAM administrator user (Admin) with console access and added the user to the Administrators group
-      <img src="Images/create_admin_user.png" width="700">
+#### EC2 Operations
+**started the EC2 instance**
+
+  <img src="Images/userIT_running_instance_ec2.png" width="700">
+**Stopped the EC2 instance**
+
+  <img src="Images/userIT_stopped_instance_ec2.png" width="700">
+  
+**Terminated the EC2 instance**
+
+  <img src="Images/userIT_terminate_instance_ec2.png" width="700">
+
+#### CloudTrail Events
+ AWS CloudTrail successfully recorded each management event generated during the EC2 instance lifecycle operations.
+  **RunInstances**
  
-  12. Signed out of the root account and signed in using the Admin IAM user. 
-      <img src="Images/login-console-admin.png" width="700">
+  <img src="Images/runInstancesEvent_it_user.png" width="700">
+          
+  **StopInstances**
   
-  13. Enabled Multi-Factor Authentication (MFA) for the Admin user
-      <img src="Images/set-up-MFA-admin.png" width="700">
-      <img src="Images/set-up-MFA-admin-enable.png" width="700">
+  <img src="Images/stopInstancesEvent_it_user.png" width="700">
+          
+  **TerminateIntances**
   
-  14. Opened the IAM dashboard using the Admin account
-      <img src="Images/dashboard-IAM-Admin.png" width="700">
-  15. Created IAM groups for each department and attached the appropriate AWS managed policies.
-      
-      **Screenshot - IAM Groups**
-      <img src="Images/IAM_Groups.png" width="700">
-      
-      The following AWS managed policies were attached to each IAM group:
-        | IAM Group | Attached Policy | Purpose |
-        | :--- | :--- | :--- |
-        | Administrators | `AdministratorAccess` | Full administrative access to AWS resources |
-        | HR_Group | `AmazonS3ReadOnlyAccess` | Read-only access to Amazon S3 |
-        | Finance_Group | `AWSBillingReadOnlyAccess` | Read-only access to Billing and Cost Management |
-        | IT_Group | `AmazonEC2FullAccess` | Full access to Amazon EC2 |
+  <img src="Images/TerminateInstancesEvent_it_user.png" width="700">
+          
+  10. Configure AWS CloudWatch Logs
+Opened **Amazon CloudWatch Logs** and verified that AWS CloudTrail was successfully delivering management events to the configured log group.
+
+The most recent log stream was opened to confirm that CloudTrail events were being ingested into CloudWatch Logs before creating monitoring rules.
+  
+   <img src="Images/cloudwatch_log stream_cloudtrailevents_user_admin.png" width="700">
    
-    
-  16. Created IAM users for each department and assigned each user to the appropriate IAM group.
-    
-      **Screenshot - IAM User**
-      <img src="Images/IAM_Users.png" width="700">
-    
-      | IAM User | IAM Group | Group Policy | Directly Attached Policy |
-       | :--- | :--- | :--- | :--- |
-       | Admin@IAM | Administrators | AdministratorAccess | IAMUserChangePassword|
-       | Alice_HR | HR_Group | AmazonS3ReadOnlyAccess | IAMUserChangePassword|
-       | Bobby_IT | IT_Group | AmazonEC2FullAccess | IAMUserChangePassword|
-       | Conan_Finance| Finance_Group| AWSBillingReadOnlyAccess | IAMUserChangePassword|
+  11. Create CloudWatch Metric Filter
+Created a CloudWatch metric filter named **UserCreationEvents** to detect IAM user creation activities recorded by AWS CloudTrail.
 
-       **Note:** Department-specific permissions were assigned through IAM   groups to follow Role-Based Access Control (RBAC). The `IAMUserChangePassword` policy was attached directly to each IAM user to allow users to change their own passwords after their initial login.
-              
-17. Enable the **Require password reset at next sign-in** option when creating each IAM user and attached the `IAMUserChangePassword` policy to allow users to change their own passwords.
-18. Validated permissions by signing in as each IAM user and testing access to AWS services to verify the implementation of the Principle of Least Privilege (PoLP)
+The filter pattern used was:
 
-Permission Validation - Alice_HR
+```text
+CreateUser
+```
+ **Note:** An initial attempt using the JSON filter pattern `{$.eventName = "CreateUser"}` did not match the CloudTrail log format during testing. The filter pattern was updated to `CreateUser`, which successfully detected the IAM user creation events.
 
-Assigned Permissions
-- Group: `HR_Group`
-- Group Policy: `AmazonS3ReadOnlyAccess`
-- Directly Attached Policy: `IAMUserChangePassword`
+  <img src="Images/create_createUser_metric_filter.png" width="700">
 
-Validation Tests
-1. First sign-in
-- Attempted to sign-in as the `Alice_HR` IAM user. 
-- The user was prompted to reset the password before accessing the AWS management Console.
-- Result: Password reset required
-- Reason: The **Require password reset at next sign-in** option was enabled when the IAM user was created.
-  <img src="Images/user-HR_required_pass_reset_enable.png" width="700">
-  
-2. AWS IAM
-- Attempted to access the IAM Dashboard.
-- Result: Access denied.
-- Reason: The user was not granted IAM administrative permissions. The only IAM permission available is the ability to change their own password the `IAMUserChangePassword`.
-  <img src="Images/user_HR-dashboard-IAM-access-denied.png" width="700">
-  
-3. Amazon S3
-- Attempted to access the Amazon S3 console and view the General Purpose Buckets page.
-- **Result:** Access granted. The S3 console loaded successfully, although no buckets were available in the AWS account
-- **Reason:** The `AmazonS3ReadOnlyAccess` policy allows read-only access to Amazon S3 resources.
-  <img src="Images/user_HR-enable-access-s3-bucket-list.png" width="700">
- 
-4. Amazon EC2
-- Attempted to access the EC2 Instances page.
-- **Result:** Access denied (`ec2:DescribeInstances`).
-- **Reason:** The HR group was not granted any Amazon EC2 permissions.
-  <img src="Images/user_HR-EC2-instance-access-denied.png" width="700">
+12. Create CloudWatch Alarm
+Created a CloudWatch alarm to monitor the **UserCreationEvents** metric.
 
-Conclusion
--The HR user was required to reset the password during the first sign-in and successfully accessed Amazon S3, while access to AWS IAM and Amazon EC2 was denied, confirming that the HR role follows the **Principle of Least Privilege (PoLP)**.
+The alarm was configured to trigger whenever one or more IAM user creation events were detected within the monitoring period.
 
-Permission Validation - Bobby_IT
-Assigned Permissions
-- Group: `IT_Group`
-- Group Policy: `AmazonEC2FullAccess`
-- Directly Attached Policy: `IAMUserChangePassword`
+<img src="Images/create_SecurityAlerts_alarm.png" width="700">
 
-Validation Tests
-1. First sign-in
-- Attempted to sign-in as the `Bobby_IT` IAM user. 
-- The user was prompted to reset the password before accessing the AWS management Console.
-- Result: Password reset required
-- Reason: The **Require password reset at next sign-in** option was enabled when the IAM user was created.
-  <img src="Images/user-IT_required_pass_reset_enable.png" width="700">
+<img src="Images/create_SecurityAlerts_alarm2.png" width="700">
 
-2. AWS IAM
-- Attempted to access the IAM Dashboard.
-- Result: Access denied.
-- Reason: The user was not granted IAM administrative permissions. The only IAM permission available is the ability to change their own password the `IAMUserChangePassword`.
-  <img src="Images/user_IT-dashboard-IAM-access-denied.png" width="700">
+13. Configured an Amazon SNS topic to send email notifications whenever the **UserCreationEvents** CloudWatch alarm entered the **ALARM** state.
 
-3. Amazon S3
-- Attempted to access the Amazon S3 console and view the General Purpose Buckets page.
-- **Result:** Access denied.
-- **Reason:** The IT Group was not granted any Amazon S3 permissions
-  <img src="Images/user_IT-denied-access-s3.png" width="700">
+After confirming the email subscription, successful alarm notifications were delivered to the configured email address.
 
-4. Amazon EC2
-- Attempted to access the EC2 Instances page.
-- **Result:** Access granted 
-- **Reason:** The `AmazonEC2FullAccess` policy allows full access to Amazon EC2 resources
-  <img src="Images/user_IT-EC2-instance-access-enable.png" width="700">
-  
-Conclusion
-- The IT user was required to reset the password during the first sign-in and successfully accessed Amazon EC2 while access to IAM and Amazon S3 remained restricted, validating the assigned role permissions.
+14. Validate the Monitoring Pipeline
+To validate the end-to-end monitoring workflow, a new IAM user named **Intern_IT** was created.
 
-Permission Validation - Conan_Finance
+The `CreateUser` management event was successfully recorded by **AWS CloudTrail** and delivered to **Amazon CloudWatch Logs**.
 
-Assigned Permissions
-- Group: `Finance_Group`
-- Group Policy: `AWSBillingReadOnlyAccess`
-- Directly Attached Policy: `IAMUserChangePassword`
+The configured CloudWatch metric filter detected the `CreateUser` event, increasing the **UserCreationEvents** metric and causing the CloudWatch alarm to transition to the **ALARM** state.
 
-Validation Tests
-1. First sign-in
-- Attempted to sign-in as the `Conan_Finance` IAM user. 
-- The user was prompted to reset the password before accessing the AWS management Console.
-- Result: Password reset required
-- Reason: The **Require password reset at next sign-in** option was enabled when the IAM user was created.
-  <img src="Images/user-Finance_required_pass_reset_enable.png" width="700">
-  
-2. AWS IAM
-- Attempted to access the IAM Dashboard.
-- Result: Access denied.
-- Reason: The user was not granted IAM administrative permissions. The only IAM permission available is the ability to change their own password the `IAMUserChangePassword`.
-  <img src="Images/user_Finance-dashboard-IAM-access-denied.png" width="700">
+Amazon SNS successfully delivered an email notification. The CloudWatch alarm was then verified in the AWS Management Console, confirming that the monitoring pipeline was functioning as expected.
 
-3. Amazon S3
-- Attempted to access the Amazon S3 console and view the General Purpose Buckets page.
-- **Result:** Access denied.
-- **Reason:** The Finance group was not granted any Amazon S3 permissions
-  <img src="Images/user_Finance-denied-access-s3.png" width="700">
 
-4. Amazon EC2
-- Attempted to access the EC2 Instances page.
-- **Result:** Access denied (`ec2:DescribeInstances`).
-- **Reason:** The Finance group was not granted any Amazon EC2 permissions.
-  <img src="Images/user_Finance-EC2-instance-access-denied.png" width="700">
+**Create IAM User**
+<img src="Images/create_intern_IT_for_alarm_alert.png" width="700">
 
-5. Billing and Cost Management
-- Attempted to access the billing page.
-- **Result:** Access Granted.
-- **Reason:** The `AWSBillingReadOnlyAccess` policy allows read-only access to billing information, payment history, credits, and cost analysis without allowing billing modifications.
-  <img src="Images/user_Finance-enable-access-billing-and-cost-management.png" width="700">  
-  
-Conclusion:
-- The Finance user was required to reset the password during the first sign-in and successfully accessed the AWS Billing and Cost Management console while access to AWS IAM,Billing and Cost Management, Amazon S3, and Amazon EC2 remained restricted. This demonstrates the implementation of the Principle of Least Privilege (PoLP) by granting Finance personnel access only to billing-related information.
+**SNS Email**
 
-**Overall Permission Validation Summary**
-- Permission validation was successfully completed for all IAM users. Each user was granted access only to the AWS services required for their assigned role while unauthorized access attempts were denied. These results confirm the successful implementation of Role-Based Access Control (RBAC) and the Principle of Least Privilege (PoLP) using AWS Identity and Access Management (IAM).
+<img src="Images/sns_notifaction_of_securityAlerts.png" width="700">
 
-| IAM User | IAM | Amazon S3 | Amazon EC2 | Billing & Cost Management | Status|
-| :--- | :--- | :--- | :--- |  :--- | :--- |
-|Admin |✅|✅|✅|❌| ✅Pass |
-|Alice_HR |❌|✅ Read-only|❌|❌| ✅Pass |
-|Bobby_IT|❌|❌|✅ Full Access|❌| ✅Pass |
-|Conan_Finance|❌|❌|❌| ✅ Read-only| ✅Pass |
----
+**CloudWatch Alarm Triggered**
+
+<img src="Images/cloudwatch_alarm_triggered.png" width="700">
+
+**Validation Result**
+
+This validation confirmed that the end-to-end monitoring workflow operated successfully. IAM user creation events were recorded by AWS CloudTrail, processed by Amazon CloudWatch Logs, detected by the CloudWatch metric filter, triggered the CloudWatch alarm, and generated an automated email notification through Amazon SNS.
+
+  ---
 
 ## 📊 4. Practical Execution & Findings
 
-* **Activity Executed:**
-  - Created an AWS account and signed in as the Root User.
-  - Enabled Multi-Factor Authentication (MFA) for both the Root User and the Admin IAM user.
-  - Accessed the AWS IAM Dashboard.
-  - Created IAM groups and attached the appropriate AWS managed policies :
-      + `AdministratorAccess` -> Administrators
-      + `AmazonS3ReadOnlyAccess` -> HR Group 
-      + `AmazonEC2FullAccess` -> IT group
-      + `AWSBillingReadOnlyAccess` -> Finance Group 
-  - Created IAM users for each department
-  - Attached the `IAMUserChangePassword` policy directly to each IAM user
-  - Assigned each IAM user to the appropriate IAM group.
-  - Validated permissions by signing in as each IAM user and testing access to AWS services.
-  - Confirmed the successful implementation of Role-Based Access Control (RBAC) and the Principle of Least Privilege (PoLP).
+* **Key Activities Performed**
+
+- Created an **AWS CloudTrail** trail to record management events across all AWS Regions.
+- Configured an **Amazon S3** bucket to securely store CloudTrail log files.
+- Enabled **Amazon CloudWatch Logs** integration for CloudTrail log delivery.
+- Generated IAM management activities by:
+  - Creating an IAM user (**Intern_HR**)
+  - Adding **Intern_HR** to the **HR_Group**
+  - Deleting **Intern_HR**, which automatically removed the user from **HR_Group** before deletion
+- Performed IAM permission validation:
+  - **Alice_HR** attempted to access **Amazon EC2** and received an **Access Denied** response. The unauthorized API call was recorded in AWS CloudTrail.
+  - **Conan_Finance** successfully accessed **AWS Billing & Cost Management**, and the activity was recorded in AWS CloudTrail.
+  - **Bobby_IT** successfully performed Amazon EC2 instance lifecycle operations by starting, stopping, and terminating an EC2 instance. Each action was recorded in AWS CloudTrail.
+- Verified that CloudTrail management events were successfully delivered to **Amazon CloudWatch Logs**.
+- Created a **CloudWatch Metric Filter** using the `CreateUser` filter pattern to detect IAM user creation events.
+- Created a **CloudWatch Alarm** based on the **UserCreationEvents** metric.
+- Configured an **Amazon SNS** topic to send email notifications when the CloudWatch alarm entered the **ALARM** state.
+- Validated the complete monitoring pipeline by creating an **Intern_IT** IAM user, successfully triggering the CloudWatch alarm and receiving an Amazon SNS email notification.
     
 * **Key Observations:**
-  - IAM groups simplify permission management by allowing permissions to be assigned to groups instead of individual users.
-  - The Root User should only be used for initial account configuration and emergency administrative tasks.
-  - Multi-Factor Authentication (MFA) provides an additional layer of security for privileged accounts.
-  - AWS managed policies enable quick implementation of common permission sets for different job roles.
-  - Permission validation confirmed that users could access only the AWS services required for their assigned roles.
-  - AWS returned Access Denied messages for unauthorized actions, confirming that the Principle of Least Privilege (PoLP) was correctly enforced.
-  - Testing IAM permissions using multiple user accounts is an effective way to verify Role-Based Access Control (RBAC) configurations.
+  - AWS CloudTrail recorded both successful and failed API calls performed during this lab, providing an audit trail for security monitoring.
+- Unauthorized API calls, such as **Alice_HR** attempting to access Amazon EC2, were recorded in CloudTrail with the `Client.UnauthorizedOperation` error code.
+- IAM management activities, including `CreateUser`, `AddUserToGroup`, `RemoveUserFromGroup`, and `DeleteUser`, were successfully recorded in CloudTrail Event History.
+- CloudTrail management events were successfully delivered to Amazon CloudWatch Logs, enabling the creation of monitoring rules and alerts.
+- A CloudWatch Metric Filter using the `CreateUser` filter pattern successfully detected IAM user creation events.
+- The configured CloudWatch Alarm and Amazon SNS notification successfully generated an email alert after the `CreateUser` event was detected.
+- During testing, the JSON filter pattern `{$.eventName = "CreateUser"}` did not match the CloudTrail log format. Changing the filter pattern to `CreateUser` successfully detected the event.
+- AWS automatically removed **Intern_HR** from **HR_Group** before deleting the IAM user, demonstrating that IAM group memberships must be removed before an IAM user can be deleted.
 ---
 
 ## 🚀 5. Key Takeaways & Career Alignment
 
 * **Skill Demonstrated:**
   - AWS Identity and Access Management (IAM)
+  - AWS CloudTrail
+  - Amazon CloudWatch Logs
+  - Amazon CloudWatch Metric Filters
+  - Amazon CloudWatch Alarms
+  - Amazon Simple Notification Service (SNS)
   - Role-Based Access Control (RBAC)
   - Principle of Least Privilege (PoLP)
   - Multi-Factor Authentication (MFA)
   - IAM Users and Groups
   - AWS Managed Policies
   - Permission Validation
-  - Cloud Security Fundamentals
+  - Cloud Security Monitoring
+  - Security Event Auditing
     
 * **Next Steps:**
-  - Configure AWS CloudTrail to monitor IAM activities.
-  - Generate IAM login and permission events for audit analysis.
-  - Analyze CloudTrail logs to understand user authentication and authorization events.
-  - Implement Amazon CloudWatch monitoring for AWS account activity.
-  - Replace AWS managed policies with custom IAM policies to provide more granular access control.
+  - Implement custom IAM policies instead of AWS managed policies.
+  - Monitor additional IAM events such as `DeleteUser`, `AttachUserPolicy`, and `CreateAccessKey`.
+  - Configure metric filters for suspicious authentication and privilege escalation activities.
+  - Integrate AWS GuardDuty and AWS Security Hub.
+  - Forward CloudTrail logs to Splunk for centralized security monitoring and analysis.
     
 ## 🛠 Skills Practiced
   - Amazon Web Services (AWS)
   - AWS Identity and Access Management (IAM)
-  - Cloud Security
+  - AWS CloudTrail
+  - Amazon CloudWatch
+  - Amazon Simple Notification Service (SNS)
+  - Cloud Security Monitoring
+  - Security Event Monitoring
+  - IAM Permission Validation
   - Role-Based Access Control (RBAC)
   - Principle of Least Privilege (PoLP)
   - Multi-Factor Authentication (MFA)
-  - AWS Management Console
-  - Security Validation
-  - Permission Testing
+  - Security Auditing
+  - Incident Detection Fundamentals
 
 ### Career Alignment
-  This project strengthened my understanding of AWS Identity and Access Management (IAM) by applying security best practices such as Role-Based Access Control (RBAC), Multi-Factor Authentication (MFA), and the Principle of Least Privilege (PoLP). These are foundational skills for entry-level roles such as Junior Cloud Security Engineer, Cloud Support Associate, and SOC Analyst.
+ This project demonstrates practical experience in implementing an AWS security monitoring workflow using AWS Identity and Access Management (IAM), AWS CloudTrail, Amazon CloudWatch, and Amazon SNS.
 
+By validating IAM permissions, monitoring management events, configuring automated alerts, and documenting the implementation, this project showcases practical cloud security skills relevant to entry-level roles such as:
+
+- Junior Cloud Security Engineer
+- SOC Analyst (L1)
+- Cloud Security Analyst
+- Cloud Support Associate
