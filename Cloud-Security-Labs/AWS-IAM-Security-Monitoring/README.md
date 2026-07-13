@@ -84,7 +84,7 @@ The following steps were performed to configure AWS CloudTrail for recording man
       
   6. Created a new IAM user named **Intern_HR** and added the user to the **HR_Group** to generate IAM management events for CloudTrail analysis
 
-      <img src="Images/created_intern_HR.png" width="700">
+      <img src="Images/create_intern_HR.png" width="700">
       <img src="Images/intern_HR_in_group.png" width="700">
      
   7. Verified the generated events in **AWS CloudTrail Event History**.
