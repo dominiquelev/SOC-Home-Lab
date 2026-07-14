@@ -19,6 +19,24 @@ The lab focused on the following objectives:
 
 ---
 
+## Architecture
+<p align= "center">
+<img src="diagrams/AWS-IAM-Security-Monitoring-Architecture.drawio.png" width="700">
+</p>
+
+### Architecture Overview
+This project implements an end-to-end AWS IAM security monitoring pipeline using AWS IAM, AWS CloudTrail, Amazon S3, Amazon CloudWatch Logs, CloudWatch Metric Filters, CloudWatch Alarms, and Amazon SNS. The architecture automatically records IAM management events, monitors selected activities, and sends email notifications when configured security events are detected.
+
+## Project Workflow
+1. An administrator performs an IAM action (for example, `CreateUser`).
+2. AWS CloudTrail records the IAM management event.
+3. CloudTrail stores audit logs in Amazon S3.
+4. CloudTrail delivers log events to Amazon CloudWatch Logs.
+5. A CloudWatch Metric Filter detects `CreateUser` events.
+6. A CloudWatch Alarm monitors the `UserCreationEvents` metric.
+7. Amazon SNS sends an email notification when the alarm is triggered.
+
+---
 ## ⚙️ 2. Lab Specifications & Tools
 
 * **Cloud Platform:** Amazon Web Services (AWS)
