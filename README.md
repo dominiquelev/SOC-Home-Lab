@@ -57,11 +57,13 @@ The projects focus on identity and access management (IAM), Role-Based Access Co
 
 # 📂 Portfolio Projects
 
-## ☁️ AWS IAM Administration & Security Monitoring
-📁 Folder:
-Cloud-Security-Labs/
+## ☁️ AWS IAM Administration
 
-Implemented AWS Identity and Access Management (IAM) using Role-Based Access Control (RBAC), configured Multi-Factor Authentication (MFA), applied the Principle of Least Privilege (PoLP), and built a basic cloud security monitoring workflow using AWS CloudTrail, Amazon CloudWatch, and Amazon SNS to detect and alert on IAM user creation events.
+Configured AWS Identity and Access Management (IAM) by creating users, groups, and roles, enabling Multi-Factor Authentication (MFA), applying Role-Based Access Control (RBAC), and enforcing the Principle of Least Privilege (PoLP).
+
+## ☁️ AWS IAM Security Monitoring
+
+Built a cloud security monitoring workflow using AWS CloudTrail, Amazon CloudWatch, and Amazon SNS to detect IAM user creation events and generate automated security alerts.
 
 ## 🖥️ Splunk SOC Home Lab
 
