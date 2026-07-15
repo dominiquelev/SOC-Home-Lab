@@ -1,24 +1,20 @@
-# Hi, I'm Dominique 👋
+# SOC & Cloud Security Home Lab
 
-## Aspiring Junior Cloud Security & SOC Analyst
+A hands-on cybersecurity portfolio showcasing practical projects in Security Operations (SOC), cloud security, Linux administration, network traffic analysis, and security monitoring using AWS, Splunk, and Wireshark.
 
-I am building hands-on experience in cloud security and cybersecurity through practical labs, AWS security projects, network traffic analysis, Linux administration, and security monitoring using Splunk.
+This repository documents hands-on cybersecurity projects completed to develop practical skills for entry-level SOC Analyst and Cloud Security roles.
 
-My portfolio focuses on Identity and Access Management (IAM), Role-Based Access Control (RBAC), Principle of Least Privilege (PoLP), network protocol analysis, and log investigation to develop practical skills for Cloud Security and Security Operations Center (SOC) roles.
+The projects focus on identity and access management (IAM), Role-Based Access Control (RBAC), the Principle of Least Privilege (PoLP), Linux hardening, network traffic analysis, SIEM monitoring with Splunk, and AWS security services. Each project includes implementation steps, documentation, screenshots, and key findings.
 
 ---
 
-# 🔍 Current Focus
+# 📌 Current Focus
 
-* AWS Cloud Security (IAM, CloudTrail)
-* Linux Security Fundamentals
-* Splunk Log Analysis & Monitoring
-* Network Traffic Analysis
-* HTTP / HTTPS & TLS Inspection
-* DNS & ICMP Investigation
-* Role-Based Access Control (RBAC)
-* Principle of Least Privilege (PoLP)
-* Beginner SOC Investigation Workflows
+- Splunk Detection Engineering
+- Windows Event Log Analysis
+- Threat Hunting Fundamentals
+- Linux Hardening
+- MITRE ATT&CK Mapping
 
 ---
 
@@ -43,13 +39,13 @@ My portfolio focuses on Identity and Access Management (IAM), Role-Based Access 
 
 ## Cloud Security 
 
-* AWS Identity and Access Management (IAM)
-* AWS Management Console
-* Multi-Factor Authentication (MFA)
-* Role-Based Access Control (RBAC)
-* Principle of Least Privilege (PoLP)
-* AWS CloudTrail *(Currently Learning)*
-* Authentication Log Analysis *(Currently Learning)*
+- AWS Identity and Access Management (IAM)
+- AWS CloudTrail
+- Amazon CloudWatch
+- Amazon SNS
+- Multi-Factor Authentication (MFA)
+- Role-Based Access Control (RBAC)
+- Principle of Least Privilege (PoLP)
 
 ## Version Control & Documentation
 
@@ -59,19 +55,21 @@ My portfolio focuses on Identity and Access Management (IAM), Role-Based Access 
 
 ---
 
-# 📂 Featured Projects
+# 📂 Portfolio Projects
 
-## ☁️ AWS IAM Security Lab
+## ☁️ AWS IAM Administration & Security Monitoring
+📁 Folder:
+Cloud-Security-Labs/
 
-Implemented Role-Based Access Control (RBAC) using AWS Identity and Access Management (IAM), configured Multi-Factor Authentication (MFA), assigned AWS managed policies to IAM groups, and validated the Principle of Least Privilege (PoLP) by testing permissions across multiple IAM users.
+Implemented AWS Identity and Access Management (IAM) using Role-Based Access Control (RBAC), configured Multi-Factor Authentication (MFA), applied the Principle of Least Privilege (PoLP), and built a basic cloud security monitoring workflow using AWS CloudTrail, Amazon CloudWatch, and Amazon SNS to detect and alert on IAM user creation events.
 
 ## 🖥️ Splunk SOC Home Lab
 
-Built a beginner SOC environment using Splunk Enterprise to ingest Linux authentication logs, investigate system events, and perform basic security monitoring.
+Built a SOC home lab using Splunk Enterprise to ingest and analyze Linux authentication logs, investigate failed login attempts, perform basic security monitoring, and develop SIEM investigation skills using SPL queries.
 
 ## 🌐 Wireshark HTTP vs HTTPS Traffic Analysis
 
-Analyzed the differences between unencrypted HTTP and encrypted HTTPS traffic using Wireshark packet inspection and TLS handshake analysis.
+Compared unencrypted HTTP and encrypted HTTPS traffic using Wireshark to examine packet contents, TLS handshakes, and the impact of encryption on network visibility.
 
 ## 🌐 Wireshark DNS Traffic Analysis
 
@@ -110,26 +108,19 @@ The complete documentation remains private due to security and operational sensi
 
 # 🎯 Career Goal
 
-Seeking an entry-level opportunity as:
+I'm seeking an entry-level opportunity where I can contribute to security monitoring, incident analysis, and cloud security while continuing to develop practical skills through hands-on projects and continuous learning.
 
-* Junior Cloud Security Analyst
-* Cloud Support Associate
-* SOC Analyst (L1)
-* Junior Security Analyst
+**Long-term goal:** Cloud Security Engineer.
 
-Long-term goal:
-
-Cloud Security Engineer
 ---
 
 # 📚 Currently Learning
 
-* AWS CloudTrail Logging
-* Linux Hardening
-* Splunk Monitoring & Detection
-* Detection Engineering Fundamentals
-* Security Monitoring Concepts
-* AWS Identity-Based Policies
+- Splunk Detection Engineering
+- Windows Event Log Analysis
+- Threat Hunting Fundamentals
+- Sigma Rules
+- MITRE ATT&CK Framework
 
 ---
 
